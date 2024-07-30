@@ -5,9 +5,9 @@ const { getUser } = require('../Controllers/User/GetUser');
 
 const UserRouter = require('express').Router();
 
+UserRouter.get('/user/', getUser)
 UserRouter.post('/user/create', createUser)
 UserRouter.put('/user/edit/:userId', editUser)
-UserRouter.get('/user/', getUser)
-UserRouter.delete('/user/userId', deleteUser)
+UserRouter.delete('/user/:userId', deleteUser)
 
 module.exports = { UserRouter };
