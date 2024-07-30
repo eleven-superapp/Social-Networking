@@ -7,16 +7,6 @@ const userSchema = new mongoose.Schema({
         unique: true,
         trim: true
     },
-    // email: {
-    //     type: String,
-    //     required: true,
-    //     unique: true,
-    //     trim: true
-    // },
-    // password: {
-    //     type: String,
-    //     required: true
-    // },
     profilePicture: {
         type: String,
         default: ''
@@ -37,7 +27,7 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Pre hook to delete related data
-userSchema.pre('remove', async function (next) {
+userSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
     const userId = this._id;
     await mongoose.model('Post').deleteMany({ author: userId });
     await mongoose.model('Comment').deleteMany({ author: userId });

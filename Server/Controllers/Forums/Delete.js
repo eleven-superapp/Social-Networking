@@ -2,7 +2,7 @@ const Forum = require("../../Models/Forum");
 
 async function deleteForum(req, res) {
     try {
-        const forum = await Forum.findByIdAndDelete(req.params.id);
+        const forum = await Forum.findByIdAndDelete(req.params.forumId);
         if (!forum) {
             return res.status(404).json({ message: "Forum not found" });
         }
@@ -11,3 +11,5 @@ async function deleteForum(req, res) {
         res.status(500).json({ message: e.message });
     }
 }
+
+module.exports = { deleteForum }

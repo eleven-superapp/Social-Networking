@@ -21,10 +21,11 @@ const forumSchema = new mongoose.Schema({
     }]
 }, { timestamps: true });
 
-forumSchema.pre('remove', async function (next) {
+forumSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
     const forumId = this._id;
     await mongoose.model('Post').deleteMany({ forum: forumId });
     await mongoose.model('Comment').deleteMany({ forum: forumId });
     next();
 })
+
 module.exports = mongoose.model('Forum', forumSchema);

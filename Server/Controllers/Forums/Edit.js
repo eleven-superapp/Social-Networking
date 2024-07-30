@@ -1,11 +1,13 @@
+const Forum = require("../../Models/Forum");
+
 async function editForum(req, res) {
     try {
-        const { formId } = req.params;
+        const { forumId } = req.params;
         const { title, description } = req.body;
-        if (!formId) {
+        if (!forumId) {
             return res.status(400).json({ message: "Forum ID is required" });
         } else {
-            const updatedForum = await Forum.findByIdAndUpdate(title, description, { new: true });
+            const updatedForum = await Forum.findByIdAndUpdate(forumId, { title, description }, { new: true });
             if (!updatedForum) {
                 return res.status(404).json({ message: "Forum not found" });
             }
