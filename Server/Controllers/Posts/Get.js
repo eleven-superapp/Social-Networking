@@ -1,20 +1,45 @@
 const Post = require('../../Models/Post');
 const Comment = require('../../Models/Comment');
+const { populate } = require('../../Models/User');
 
 async function getPost(req, res) {
     try {
         const postId = req.params.postId;
         const { commentsLimit = 10, repliesLimit = 5 } = req.query; // Query parameters for pagination
 
-       
+
         const post = await Post.findById(postId)
             .populate({
                 path: 'comments',
+                select: 'author content replies',
                 options: { limit: parseInt(commentsLimit, 10) },
                 populate: {
-                    path: 'author', 
-                    select: 'username' 
+                    path: 'author',
+                    select: 'username'
+                }, populate: {
+                    path: 'replies',
+                    select: 'content author replies',
+                    populate: {
+                        path: 'author',
+                        select: 'username'
+                    }, populate: {
+                        path: 'replies',
+                        select: 'content author',
+                        populate: {
+                            path: 'author',
+                            select: 'username'
+                        }
+                    }
                 }
+            }).populate({
+                path: 'upvotes downvotes',
+                select: 'username'
+            }).populate({
+                path: 'forum',
+                select: 'title'
+            }).populate({
+                path: 'author',
+                select: 'username'
             })
             .lean();
 
@@ -22,21 +47,25 @@ async function getPost(req, res) {
             return res.status(404).json({ message: 'Post not found' });
         }
 
-        const populatedComments = await Promise.all(post.comments.map(async (comment) => {
-            const populatedComment = await Comment.findById(comment._id)
-                .populate({
-                    path: 'replies',
-                    options: { limit: parseInt(repliesLimit, 10) },
-                    populate: {
-                        path: 'author',
-                        select: 'username' 
-                    }
-                })
-                .lean();
-            return populatedComment;
-        }));
+        // const populatedComments = await Promise.all(post.comments.map(async (comment) => {
+        //     const populatedComment = await Comment.findById(comment._id)
+        //         .populate({
+        //             path: 'replies',
+        //             select: 'author content replies',
+        //             options: { limit: parseInt(repliesLimit, 10) },
+        //             populate: {
+        //                 path: 'author',
+        //                 select: 'username'
+        //             }, populate: {
+        //                 path: 'replies',
+        //                 select: 'content'
+        //             }
+        //         })
+        //         .lean();
+        //     return populatedComment;
+        // }));
 
-        post.comments = populatedComments;
+        // post.comments = populatedComments;
 
         res.status(200).json(post);
     } catch (error) {
