@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
+    parentId: mongoose.Schema.Types.ObjectId,
     username: {
         type: String,
         required: true,
@@ -29,7 +30,8 @@ const userSchema = new mongoose.Schema({
             ref: 'User',
         },
     ],
-    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', }]
+    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', }],
+    miniAppName: { type: String, enum: ['wellness', 'budgeting', 'mindfull', 'productivity', 'social'] }
 }, { timestamps: true });
 
 

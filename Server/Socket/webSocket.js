@@ -16,7 +16,7 @@ const clients = new Map(); // Map to store connected clients
 
 wss.on("connection", (ws, req) => {
 
-    const token = req.headers.cookie?.split("jwt=")[1];
+    const token = req.headers.cookie?.split("socialToken=")[1];
     if (!token) {
         ws.send("Login first");
         console.log("Login First");
@@ -24,7 +24,7 @@ wss.on("connection", (ws, req) => {
         return;
     }
 
-    jwt.verify(token, "MYSECRETE", (err, { user }) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, { user }) => {
         if (err) {
             ws.send("Invalid token");
             ws.close();
@@ -47,7 +47,6 @@ wss.on("connection", (ws, req) => {
             const { text, reciever, sender } = newMessage;
 
             if (reciever == eleven._id) {
-                console.log(`Received message...........`)
                 const result = await chat.sendMessage(text);
                 clients.get(sender).send(JSON.stringify({
                     text: result.response.text(),

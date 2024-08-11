@@ -13,6 +13,7 @@ async function getOlderChat(req, res) {
             }]
         }).sort({ createdAt: 1 })
         console.log(messages)
+        console.log("messages")
         res.status(200).json(messages)
 
     } catch (e) {

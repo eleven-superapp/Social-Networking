@@ -59,4 +59,10 @@ async function getFriendRequests(req, res) {
     }
 }
 
-module.exports = { sendFriendRequest, updateFR,getFriendRequests }
+
+async function getUsers(req, res) {
+    const users = await User.find({ username: { $nin: ["Eleven Ai", req.params.myUsername] } })
+    res.status(200).json(users)
+}
+
+module.exports = { sendFriendRequest, updateFR, getFriendRequests, getUsers }
