@@ -48,4 +48,5 @@ userSchema.pre('deleteOne', { document: true, query: false }, async function (ne
     next();
 });
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+module.exports = User 

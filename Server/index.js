@@ -31,6 +31,7 @@ const { CommentRouter } = require('./Router/Comment')
 const { ConnectivityRouter } = require('./Router/Connectivity');
 const amINew = require('./Middlewares/amINew');
 const User = require('./Models/User');
+const GroupRouter = require('./Router/Groups');
 
 // Routes
 app.use('/api/social/v1/', HomeRouter);
@@ -40,6 +41,7 @@ app.use('/api/social/v1/', PostRouter);
 app.use('/api/social/v1/', ReactionRouter);
 app.use('/api/social/v1/', CommentRouter);
 app.use('/api/social/v1/', ConnectivityRouter)
+app.use('/api/social/v1/', GroupRouter)
 
 //Get social user
 app.get('/api/social/v1/:parentId', amINew, async (req, res) => {
@@ -54,7 +56,6 @@ app.get('/api/social/v1/:parentId', amINew, async (req, res) => {
             } else {
                 res.status(200).cookie('socialToken', token, { httpOnly: true, maxAge: 3600000 }).json(user)
             }
-
         })
     } catch (error) {
         console.error(error)

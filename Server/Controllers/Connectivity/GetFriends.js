@@ -3,6 +3,7 @@ const User = require("../../Models/User");
 async function getFriends(req, res) {
     try {
         const { userId } = req.params;
+        console.log(userId);
         try {
             const friends = await User.findById(userId).populate('friends')
             res.status(200).json(friends.friends)
