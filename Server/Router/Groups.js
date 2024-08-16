@@ -1,6 +1,7 @@
 const { createGroup } = require('../Controllers/Groups/CreateGroup');
-const { getGroupById, getGroupsByName, getGroupsByMember, getGroupsByAdmin, getGroupsByLocation, getGroupsByVisibility, getAllGroups } = require('../Controllers/Groups/Get');
+const { getGroupById, getGroupsByName, getGroupsByMember, getGroupsByAdmin, getGroupsByLocation, getGroupsByVisibility, getAllGroups, getGroupChat } = require('../Controllers/Groups/Get');
 const { sendJoinRequest, processJoinRequest } = require('../Controllers/Groups/JoinGroup');
+const { getOlderChat } = require('../Controllers/Messeging/Chat');
 
 const GroupRouter = require('express').Router();
 
@@ -33,6 +34,9 @@ GroupRouter.put('/group/join-request', sendJoinRequest);
 
 //Process join request
 GroupRouter.put('/group/join-request/process/', processJoinRequest);
+
+//Get groups chat
+GroupRouter.get('/group/chats/:groupId/:userId',getGroupChat);
 
 
 

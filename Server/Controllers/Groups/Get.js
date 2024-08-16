@@ -3,7 +3,7 @@ const Group = require("../../Models/Groups");
 const getGroupById = async (req, res) => {
     try {
         const { id } = req.params;
-        const group = await Group.findById(id).populate('members admins joinRequests.userId');
+        const group = await Group.findById(id).populate('members admins joinRequests.userId')
         console.log(group.members)
         if (!group) {
             return res.status(404).json({ message: 'Group not found' });
@@ -16,6 +16,27 @@ const getGroupById = async (req, res) => {
     }
 };
 
+const getGroupChat = async (req, res) => {
+    try {
+        const { groupId, userId } = req.params;
+        const group = await Group.findById(groupId)
+        const isUserAMember = group.members.includes(userId);
+        if (isUserAMember) {
+            const groupChat = await Group.findById(groupId,{messeges:1}).populate({
+                path: 'messeges', select: 'sender text', populate: {
+                    path: 'sender',
+                    select: 'username'
+                }
+            })
+            return res.status(200).json(groupChat);
+        } else {
+            return res.status(400).json({ message: 'User is not a member of this group' });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error while fetching the group chat' });
+    }
+}
 
 const getGroupsByName = async (req, res) => {
     try {
@@ -87,4 +108,4 @@ const getAllGroups = async (req, res) => {
 };
 
 
-module.exports = { getAllGroups, getGroupById, getGroupsByAdmin, getGroupsByLocation, getGroupsByMember, getGroupsByVisibility, getGroupsByName }
+module.exports = { getAllGroups, getGroupById, getGroupsByAdmin, getGroupsByLocation, getGroupsByMember, getGroupsByVisibility, getGroupsByName, getGroupChat }
