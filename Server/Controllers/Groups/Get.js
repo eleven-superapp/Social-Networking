@@ -3,7 +3,8 @@ const Group = require("../../Models/Groups");
 const getGroupById = async (req, res) => {
     try {
         const { id } = req.params;
-        const group = await Group.findById(id).populate('members admins messeges');
+        const group = await Group.findById(id).populate('members admins joinRequests.userId');
+        console.log(group.members)
         if (!group) {
             return res.status(404).json({ message: 'Group not found' });
         }

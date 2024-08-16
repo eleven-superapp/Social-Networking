@@ -33,6 +33,14 @@ const amINew = require('./Middlewares/amINew');
 const User = require('./Models/User');
 const GroupRouter = require('./Router/Groups');
 
+//whoami
+app.get('/whoami/:id', async (req, res) => {
+    const user = await User.findById(req.params.id)
+    res.json({ user })
+
+})
+
+
 // Routes
 app.use('/api/social/v1/', HomeRouter);
 app.use('/api/social/v1/', UserRouter);

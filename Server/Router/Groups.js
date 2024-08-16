@@ -1,6 +1,6 @@
 const { createGroup } = require('../Controllers/Groups/CreateGroup');
 const { getGroupById, getGroupsByName, getGroupsByMember, getGroupsByAdmin, getGroupsByLocation, getGroupsByVisibility, getAllGroups } = require('../Controllers/Groups/Get');
-const { sendJoinRequest } = require('../Controllers/Groups/JoinGroup');
+const { sendJoinRequest, processJoinRequest } = require('../Controllers/Groups/JoinGroup');
 
 const GroupRouter = require('express').Router();
 
@@ -30,6 +30,9 @@ GroupRouter.post('/group/create', createGroup);
 
 //Join Request
 GroupRouter.put('/group/join-request', sendJoinRequest);
+
+//Process join request
+GroupRouter.put('/group/join-request/process/', processJoinRequest);
 
 
 
