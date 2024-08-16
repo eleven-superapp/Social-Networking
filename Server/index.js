@@ -3,10 +3,13 @@ const cookies = require('cookie-parser')
 require('dotenv').config();
 const cors = require('cors');
 const jwt = require('jsonwebtoken')
+const verifyToken = require('./Middlewares/Token/tokenVerification');
+const amINew = require('./Middlewares/amINew');
+const User = require('./Models/User');
+const GroupRouter = require('./Router/Groups');
 require('./Utils/connection'); // Ensure this handles errors and reconnections
 
 const app = express();
-const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -29,17 +32,10 @@ const { PostRouter } = require('./Router/Post');
 const { ReactionRouter } = require('./Router/Reaction');
 const { CommentRouter } = require('./Router/Comment')
 const { ConnectivityRouter } = require('./Router/Connectivity');
-const amINew = require('./Middlewares/amINew');
-const User = require('./Models/User');
-const GroupRouter = require('./Router/Groups');
 
-//whoami
-app.get('/whoami/:id', async (req, res) => {
-    const user = await User.findById(req.params.id)
-    res.json({ user })
 
-})
-
+//Token Authentication
+app.use(verifyToken)
 
 // Routes
 app.use('/api/social/v1/', HomeRouter);

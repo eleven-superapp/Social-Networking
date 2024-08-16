@@ -48,7 +48,7 @@ wss.on("connection", (ws, req) => {
         ws.on("message", async (message) => {
             const eleven = await User.findOne({ username: "Eleven Ai" });
             const newMessage = JSON.parse(message.toString());
-            const { text, reciever, sender, groupId } = newMessage;
+            const { text, reciever, sender, groupId,senderUsername } = newMessage;
 
             if (reciever == eleven._id) {
                 const result = await chat.sendMessage(text);
@@ -73,28 +73,31 @@ wss.on("connection", (ws, req) => {
                         group: groupId,
                         status: "Sent"
                     });
-                    await newMessageForDb.save().then(async ({ _id }) => {
+                    await newMessageForDb.save().then(async (message) => {
                         // Add the message id to the group's messages array
 
-                        group.messeges.push(_id)
+                        group.messeges.push(message._id)
                         await group.save();
-                    })
-
-                    // Broadcast the message to all group members
-                    group.members.forEach(memberId => {
+                        
+                        // Broadcast the message to all group members
+                        group.members.forEach(memberId => {
                         if (memberId.toString() !== sender) {
                             const recipientSocket = clients.get(memberId.toString());
                             if (recipientSocket) {
                                 recipientSocket.send(JSON.stringify({
-                                    text: text,
-                                    sender: sender,
-                                    groupId: groupId,
-                                    status: "Sent"
+                                    _id:message._id,
+                                    text:message.text,
+                                    sender: message.sender,
+                                    groupId: message.group,
+                                    status: "Sent",
+                                    createdAt:message.createdAt,
+                                    senderUsername: senderUsername
                                 }));
                             }
                         }
                     });
-
+                    
+                })
                 } catch (err) {
                     console.error("Error processing group message:", err);
                 }

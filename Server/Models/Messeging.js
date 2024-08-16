@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const messagesSchema = new mongoose.Schema(
     {
@@ -20,12 +20,17 @@ const messagesSchema = new mongoose.Schema(
             default: 'Sent',
             enum: ['Sent', 'Delivered', 'Seen'],
         },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+            expires: '15d', // Automatically delete documents after 15 days
+        },
     },
     { timestamps: true }
 );
 
 messagesSchema.index({ sender: 1, receiver: 1, createdAt: -1 });
 
-const Messages = mongoose.model("Messeging", messagesSchema)
+const Messages = mongoose.model("Messeging", messagesSchema);
 
-module.exports = { Messages }
+module.exports = { Messages };

@@ -20,10 +20,13 @@ const getGroupChat = async (req, res) => {
     try {
         const { groupId, userId } = req.params;
         const group = await Group.findById(groupId)
+        if(!group) {
+            return res.status(404).json({ message: 'Group not found' });
+        }
         const isUserAMember = group.members.includes(userId);
         if (isUserAMember) {
             const groupChat = await Group.findById(groupId,{messeges:1}).populate({
-                path: 'messeges', select: 'sender text', populate: {
+                path: 'messeges', select: 'sender text createdAt status', populate: {
                     path: 'sender',
                     select: 'username'
                 }
