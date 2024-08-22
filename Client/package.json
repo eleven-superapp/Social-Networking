@@ -2,6 +2,7 @@
   "name": "Social_Networking",
   "version": "0.0.1",
   "private": true,
+  "main": "./index.js",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -10,8 +11,10 @@
     "test": "jest"
   },
   "dependencies": {
+    "lucide-react-native": "^0.429.0",
     "react": "18.3.1",
-    "react-native": "0.75.2"
+    "react-native": "0.75.2",
+    "react-native-svg": "^15.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
