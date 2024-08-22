@@ -1,8 +1,8 @@
 import React from 'react';
-import {View,Text} from 'react-native';
-import MainScreen from './src/screens/MainScreen';
+import AppNavigator from './src/navigations/AppNavigator';
+import HomeScreen from './src/screens/mainScreens/HomeScreen';
 export default function App(){
   return(
-    <MainScreen />
+    <AppNavigator />
   )
 }

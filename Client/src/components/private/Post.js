@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { MoveUp, MoveDown, MessageCircle } from 'lucide-react-native';
+import ThreeDots from '../shared/ThreeDots';
+import { useNavigation } from '@react-navigation/native';
 
 const Post = ({ post }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpanded = () => setIsExpanded(!isExpanded);
+
+  const navigation = useNavigation();
 
   const renderText = () => {
     if (isExpanded || post.text.length <= 100) {
@@ -42,7 +46,7 @@ const Post = ({ post }) => {
                 
                 <Text style={styles.messageText}>{post.category}</Text>
               {/* </View> */}
-              <Image source={require('../../assets/images/ThreeDots.png')} style={styles.threeDotsIcon} resizeMode="contain" />
+              <ThreeDots />
             </View>
           </View>
           <Text style={styles.timeText}>{post.time}</Text>
@@ -56,12 +60,14 @@ const Post = ({ post }) => {
           <MoveUp color={'#F51F46'} size={18} style={{ marginLeft: 4 }} />
           <Text style={styles.postFooterText}>{post.likes}</Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Pressable
+        onPress={() =>navigation.navigate("Comment Screen",{post:post})}
+        style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MessageCircle color={'#FFFFFF'} size={20} />
           <Text style={styles.postFooterText}>{post.comments}</Text>
-        </View>
+        </Pressable>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Image source={require('../../assets/images/Share.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
+          <Image source={require('../../../assets/images/Share.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
           <Text style={styles.postFooterText}>{post.shares}</Text>
         </View>
       </View>
@@ -120,7 +126,7 @@ const styles = StyleSheet.create({
     paddingVertical:4,
     backgroundColor:'#400E17',
     borderRadius:15,
-    paddingHorizontal:18
+    paddingHorizontal:18,
   },
   threeDotsIcon: {
     height: 18,
@@ -131,18 +137,18 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 12,
     position: 'absolute',
-    bottom: -2,
+    bottom: -10,
   },
   postText: {
-    color: 'white',
+    color: '#C3BABA',
     fontSize: 14,
     marginBottom: 10,
   },
   seeMoreText: {
-    color: '#F51F46',
+    color: 'white',
   },
   seeLessText: {
-    color: '#F51F46',
+    color: 'white',
 
   },
   postImage: {
