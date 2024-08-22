@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet } from 'react-native';
 import { Bell, Search } from 'lucide-react-native';
-import Post from '../components/Post';
-
+import Post from '../../components/private/Post';
+import Header from '../../components/shared/Header';
 const DATA = [
     {
         id: '1',
@@ -42,14 +42,12 @@ const DATA = [
     },
 ];
 
-export default function MainScreen() {
+export default function HomeScreen() {
     return (
         <View style={styles.container}>
             <Text>Main Screen</Text>
-            {/* <View style={styles.header}>
-        <Text style={styles.title}>Chatterbox</Text>
-        <Bell color="white" size={30} />
-      </View> */}
+            
+            <Header />
 
             <View style={styles.searchBox} >
                 <TextInput
