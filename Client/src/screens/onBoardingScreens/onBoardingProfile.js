@@ -3,10 +3,12 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput } from 'reac
 import { Menu, Info } from 'lucide-react-native'; // Import the icons you need
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../../context/userContextAPI'; // Adjust the path as necessary
+import { KeyboardAvoidingView } from 'react-native';
+
 
 const OnBoardingProfile = () => {
     const { user, setUser } = useContext(UserContext); // Access user and setUser from context
-    const [bio, setBio] = useState(user ? user.bio : ''); // Set initial bio from user data if available
+    const [bio, setBio] = useState(user.bio ? user.bio : ''); // Set initial bio from user data if available
 
     const navigation = useNavigation();
 
@@ -15,7 +17,7 @@ const OnBoardingProfile = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
                 <View style={{
@@ -56,7 +58,7 @@ const OnBoardingProfile = () => {
                 />
             </View>
 
-            <View style={{
+            <KeyboardAvoidingView style={{
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -120,13 +122,13 @@ const OnBoardingProfile = () => {
                         <Text style={styles.noPostsDescription}>Your posts will be added here</Text>
                     </View>
                 </View>
-            </View>
+            </KeyboardAvoidingView>
 
             {/* Button */}
             <TouchableOpacity style={styles.button} onPress={handleNextPress}>
                 <Text style={styles.buttonText}>All set .. Go!</Text>
             </TouchableOpacity>
-        </View>
+        </KeyboardAvoidingView>
     );
 };
 
