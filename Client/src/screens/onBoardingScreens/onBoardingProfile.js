@@ -2,10 +2,16 @@ import React, {useState} from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
 import { Menu, Info } from 'lucide-react-native'; // Import the icons you need
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 const OnBoardingProfile = () => {
 
     const [bio, setBio] = useState('');
+
+    const handleNextPress = () => {
+      const navigation = useNavigation();
+      navigation.navigate('Home Screen');
+    }
 
   return (
     <View style={styles.container}>
@@ -89,7 +95,7 @@ const OnBoardingProfile = () => {
         </View>
         
             {/* Button */}
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleNextPress}>
             <Text style={styles.buttonText}>All set .. Go!</Text>
         </TouchableOpacity>
     </View>
