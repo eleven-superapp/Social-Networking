@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
+import { useNavigation } from '@react-navigation/native';
 
 const dots = [
     { cx: 130, cy: 67 },   // Top middle
@@ -18,6 +19,13 @@ const avatars = [
 ];
 
 const OnBoarding = () => {
+
+  const navigation = useNavigation();
+
+  const handleNextPress = ()  => {
+    navigation.navigate('OnBoardingProfile');
+  }
+
   return (
     <LinearGradient
       colors={['#101010', '#4A06135C']}
@@ -72,7 +80,7 @@ const OnBoarding = () => {
         ))}
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleNextPress}>
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
     </LinearGradient>
