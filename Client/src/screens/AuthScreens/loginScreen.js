@@ -10,11 +10,12 @@ import {
 import axios from "axios";
 import { UserContext } from "../../../context/userContextAPI";
 import { IP } from "../../../constants/constants";
-
+import LinearGradient from 'react-native-linear-gradient';
 
 const LoginScreen = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const { setUser } = useContext(UserContext);
 
@@ -24,6 +25,7 @@ const LoginScreen = () => {
     console.log("IP address:", IP);
   },[username,password])
   const handleLogin = async () => {
+    setLoading(true);
     await axios
       .post(
         `http://${IP}:6969/login`, 
@@ -41,16 +43,23 @@ const LoginScreen = () => {
             .get(`http://${IP}:5000/api/social/v1/${res.data.user._id}`)
             .then((res) => {
               setUser(res.data);
+              setLoading(false);
               navigation.navigate("OnBoarding");
             });
         } else {
           console.warn("Failed to login");
+          setLoading(false);
         }
       });
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#101010', '#4A0613']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.container}
+    >
       <Text style={styles.title}>Welcome to Social Networking</Text>
       <TextInput
         style={styles.input}
@@ -66,9 +75,9 @@ const LoginScreen = () => {
         secureTextEntry
       />
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Go to Chat</Text>
+        {loading ? <Text style={styles.buttonText}>Logging in...</Text> : <Text style={styles.buttonText}>Login</Text>}
       </TouchableOpacity>
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -77,24 +86,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
     padding: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
+    color: "#fff",
     marginBottom: 20,
   },
   input: {
     width: "100%",
     height: 50,
-    backgroundColor: "#fff",
+    backgroundColor: "#333",
     borderRadius: 8,
     paddingHorizontal: 15,
     marginVertical: 10,
     fontSize: 16,
-    color: "#333",
+    color: "#fff",
   },
   button: {
     backgroundColor: "#6200ee",

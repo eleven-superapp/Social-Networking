@@ -28,7 +28,7 @@ const OnBoarding = () => {
 
   return (
     <LinearGradient
-      colors={['#101010', '#4A06135C']}
+      colors={['#101010', '#4A0613']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.container}
