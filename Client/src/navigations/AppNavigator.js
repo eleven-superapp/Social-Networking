@@ -11,7 +11,7 @@ import CommentScreen from '../screens/mainScreens/CommentScreen';
 import OnBoarding from '../screens/onBoardingScreens/onBoarding';
 import OnBoardingProfile from '../screens/onBoardingScreens/onBoardingProfile';
 import LoginScreen from '../screens/AuthScreens/loginScreen';
-
+import ReplyScreen from '../screens/mainScreens/ReplyScreen';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -49,6 +49,8 @@ const AppNavigator = () => {
             options={{ headerShown: false }}
           />
           <Stack.Screen name='Comment Screen' component={CommentScreen} />
+          
+          <Stack.Screen name='Reply Screen' component={ReplyScreen}  />
         
         </Stack.Navigator>
       </NavigationContainer>
