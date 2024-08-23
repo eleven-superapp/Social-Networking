@@ -20,8 +20,9 @@ const avatars = [
 
 const OnBoarding = () => {
 
+  const navigation = useNavigation();
+
   const handleNextPress = ()  => {
-    const navigation = useNavigation();
     navigation.navigate('OnBoardingProfile');
   }
 
