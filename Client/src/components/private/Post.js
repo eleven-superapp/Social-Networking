@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 const Post = ({ post }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpanded = () => setIsExpanded(!isExpanded);
+  const [selectedButton,setSelectedButton] = useState();
 
   const navigation = useNavigation();
 
@@ -43,8 +44,8 @@ const Post = ({ post }) => {
             <Text style={[styles.userName, styles.flexOne]}>{post.user}</Text>
             <View style={styles.messageContainer}>
               {/* <View style={styles.messageButton}> */}
-                
-                <Text style={styles.messageText}>{post.category}</Text>
+
+              <Text style={styles.messageText}>{post.category}</Text>
               {/* </View> */}
               <ThreeDots />
             </View>
@@ -56,13 +57,21 @@ const Post = ({ post }) => {
       <Image source={{ uri: post.imageUrl }} style={styles.postImage} />
       <View style={styles.postFooter}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MoveDown color={'#C3BABA'} size={18} />
-          <MoveUp color={'#F51F46'} size={18} style={{ marginLeft: 4 }} />
+          <Pressable
+          onPress={()=>setSelectedButton("DisLike")}
+          >
+            <MoveDown color={ selectedButton=="DisLike"?'#F51F46':'#C3BABA'} size={18} />
+          </Pressable>
+          <Pressable
+          onPress={()=>setSelectedButton("Like")}
+          >
+            <MoveUp color={ selectedButton=="Like"?'#F51F46':'#C3BABA'} size={18} style={{ marginLeft: 4 }} />
+          </Pressable>
           <Text style={styles.postFooterText}>{post.likes}</Text>
         </View>
         <Pressable
-        onPress={() =>navigation.navigate("Comment Screen",{post:post})}
-        style={{ flexDirection: 'row', alignItems: 'center' }}>
+          onPress={() => navigation.navigate("Comment Screen", { post: post,selectedButton:selectedButton })}
+          style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MessageCircle color={'#FFFFFF'} size={20} />
           <Text style={styles.postFooterText}>{post.comments}</Text>
         </Pressable>
@@ -123,10 +132,10 @@ const styles = StyleSheet.create({
   messageText: {
     marginLeft: 6,
     color: '#EFBEBE',
-    paddingVertical:4,
-    backgroundColor:'#400E17',
-    borderRadius:15,
-    paddingHorizontal:18,
+    paddingVertical: 4,
+    backgroundColor: '#400E17',
+    borderRadius: 15,
+    paddingHorizontal: 18,
   },
   threeDotsIcon: {
     height: 18,
