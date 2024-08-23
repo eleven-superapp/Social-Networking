@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import CustomBottomNavBar from '../components/shared/CustomBottomNavbar';
 import HomeScreen from '../screens/mainScreens/HomeScreen';
 import CommentScreen from '../screens/mainScreens/CommentScreen';
-
+import ReplyScreen from '../screens/mainScreens/ReplyScreen';
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
@@ -27,6 +27,8 @@ const AppNavigator = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen name='Comment Screen' component={CommentScreen} />
+
+        <Stack.Screen name='Reply Screen' component={ReplyScreen}  />
       
       </Stack.Navigator>
     </NavigationContainer>

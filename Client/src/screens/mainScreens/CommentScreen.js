@@ -5,9 +5,10 @@ import Header from '../../components/shared/Header';
 import ThreeDots from '../../components/shared/ThreeDots';
 import VerticalDots from '../../components/shared/VerticalDots';
 
-const CommentScreen = ({ route }) => {
+const CommentScreen = ({ route,navigation }) => {
   const post = route.params.post; // Extract the post object from the route parameters
-
+  const selectedButton = route.params.selectedButton;
+  const comment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
   return (
     <View style={styles.container}>
       <Header />
@@ -41,7 +42,10 @@ const CommentScreen = ({ route }) => {
 
           <View style={styles.postActions}>
             <TouchableOpacity style={styles.actionButton}>
-              <ArrowUp color="#fff" size={20} />
+              <ArrowDown
+              size={20}
+              color={ selectedButton=="DisLike"?'#F51F46':'#C3BABA'} />
+              <ArrowUp color={ selectedButton=="Like"?'#F51F46':'#C3BABA'} size={20} />
               <Text style={styles.actionText}>{post.likes}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
@@ -69,7 +73,7 @@ const CommentScreen = ({ route }) => {
                   <Text style={styles.commentTime}>{post.time}</Text>
                 </View>
                 <Text style={styles.commentText}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  {comment}
                 </Text>
                 
                 <View style={styles.commentActions}>
@@ -77,7 +81,9 @@ const CommentScreen = ({ route }) => {
                     <ArrowUp color="#F51F46" size={20} />
                     <Text style={styles.commentActionText}>56.9k</Text> 
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.commentActionButton}>
+                  <TouchableOpacity 
+                  onPress={()=>navigation.navigate("Reply Screen",{comment:comment})}
+                  style={styles.commentActionButton}>
                     <Image source={require('../../../assets/images/Reply.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
                     <Text style={styles.commentReplyText}>Reply</Text> 
                   </TouchableOpacity>
