@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Circle } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
@@ -20,9 +20,12 @@ const avatars = [
 
 const OnBoarding = () => {
 
+  const [loading, setLoading] = useState(false);
+
   const navigation = useNavigation();
 
   const handleNextPress = ()  => {
+    setLoading(true);
     navigation.navigate('OnBoardingProfile');
   }
 
@@ -81,7 +84,13 @@ const OnBoarding = () => {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleNextPress}>
-        <Text style={styles.buttonText}>Get Started</Text>
+        {loading ? 
+        <View style={styles.loaderContainer}>
+            <ActivityIndicator size="small" color="#FFFFFF" style={styles.loader} />
+            <Text style={styles.buttonText}>Redirecting ...</Text>
+        </View> 
+        : 
+        <Text style={styles.buttonText}>Get Started</Text>}
       </TouchableOpacity>
     </LinearGradient>
   );
@@ -155,6 +164,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  loaderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loader: {
+      marginRight: 10, // Adds space between the loader and the text
   },
 });
 

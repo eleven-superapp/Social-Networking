@@ -48,7 +48,12 @@ const Post = ({ post }) => {
   return (
     <View style={styles.postContainer}>
       <View style={styles.postHeader}>
-        <Image source={{ uri: post.author.profilePicture }} style={styles.profilePic} />
+      <Image
+        source={{ uri: `${post.author.profilePicture}` }}
+        style={styles.profilePic}
+        onError={(e) => console.log('Profile Image load error:', e.nativeEvent.error)} // Error handling
+        onLoad={() => console.log('Profile Image loaded:', post.author.profilePicture)} // Log successful loads
+      />
         <View style={styles.userContainer}>
           <View style={styles.headerTopRow}>
             <Text style={[styles.userName, styles.flexOne]}>{post.author.username}</Text>

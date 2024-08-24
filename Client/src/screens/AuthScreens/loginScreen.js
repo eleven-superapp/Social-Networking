@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   StyleSheet,
+  ActivityIndicator
 } from "react-native";
 import axios from "axios";
 import { UserContext } from "../../../context/userContextAPI";
@@ -88,7 +89,13 @@ const LoginScreen = () => {
         secureTextEntry
       />
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        {loading ? <Text style={styles.buttonText}>Logging in...</Text> : <Text style={styles.buttonText}>Login</Text>}
+        {loading ? 
+        <View style={styles.loaderContainer}>
+            <ActivityIndicator size="small" color="#FFFFFF" style={styles.loader} />
+            <Text style={styles.buttonText}>Logging in...</Text>
+        </View> 
+        : 
+        <Text style={styles.buttonText}>Login</Text>}
       </TouchableOpacity>
     </LinearGradient>
   );
@@ -118,17 +125,27 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   button: {
-    backgroundColor: "#6200ee",
+    backgroundColor: '#F51F46',
     paddingVertical: 15,
-    paddingHorizontal: 30,
     borderRadius: 8,
-    marginTop: 20,
+    alignItems: 'center',
+    width: '90%',
+    alignSelf: 'center',
+    zIndex: 200,
+    marginTop: '10%'
   },
   buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  loaderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loader: {
+      marginRight: 10, // Adds space between the loader and the text
   },
 });
 

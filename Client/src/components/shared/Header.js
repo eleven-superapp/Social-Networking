@@ -1,8 +1,11 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Menu, User } from 'lucide-react-native'; // Import icons from Lucide
+import { UserContext } from '../../../context/userContextAPI';
 
 const Header = () => {
+  const { user, setUser } = useContext(UserContext);
+  // console.log("USer:", user);
   return (
     <View style={styles.headerContainer}>
       <View style={{flexDirection:'row',alignItems:'center'}} >
@@ -12,8 +15,10 @@ const Header = () => {
         <Text style={styles.title}>Chatterbox</Text>
       </View>
       <Image
-        source={{ uri: 'https://avatar.iran.liara.run/public/37' }}
+        source={{ uri: `${user?.profilePicture}` }}
         style={styles.profileImage}
+        onError={(e) => console.log('Profile Image load error:', e.nativeEvent.error)} // Error handling
+        onLoad={() => console.log('Profile Image loaded:', user.profilePicture)} // Log successful loads
       />
     </View>
   );
