@@ -1,10 +1,8 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Menu, Info } from 'lucide-react-native'; // Import the icons you need
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../../context/userContextAPI'; // Adjust the path as necessary
-import { KeyboardAvoidingView } from 'react-native';
-
 
 const OnBoardingProfile = () => {
     const { user, setUser } = useContext(UserContext); // Access user and setUser from context
@@ -17,83 +15,56 @@ const OnBoardingProfile = () => {
     }
 
     return (
-        <KeyboardAvoidingView style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '30%'
-                }}>
-                    <TouchableOpacity style={styles.menuIcon}>
-                        <Menu color="#858585" size={24} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Set your profile</Text>
-                </View>
-                <Image
-                    style={styles.headerAvatar}
-                    source={{
-                        uri: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=mLvOM1FDQUQ9w6X-ZQNfuBhWPHSAL3aXLlC07R81IuXSXwbZxPT4mIz4g4UI3fxspyyn35oAmkAq~a2IHfWDDfrBQou~lhSwLXWzrgHbEIXsm-Ycw0oDw69I8YvfKPIQTokUORFcUvSS8AZP6HXvhD3VGXidSHBg69iqIIWKWu1HZkNILEcTDxT5FOeSKw7Jb50JS6Gcd95fcCNRvPYsdE4Pt086H5JAFqpaUGPDQBsaF2-J6MdnPrzJJruHhABCEQtZfGBIev3TMO-O18E4Jf8p8CJfHDRfMmBURsmsleTiM26CmJRS2d4YRcIR0XuLY1vCKG2KHBqUPpjIYvRgmw__', // Use user avatar if available
-                    }}
-                />
-            </View>
-
-            {/* Profile Info */}
-            <View style={styles.profileContainer}>
-                <View style={styles.profileCoverPhotoContainer}>
+        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 20}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                {/* Header */}
+                <View style={styles.header}>
+                    <View style={styles.headerContent}>
+                        <TouchableOpacity style={styles.menuIcon}>
+                            <Menu color="#858585" size={24} />
+                        </TouchableOpacity>
+                        <Text style={styles.headerTitle}>Set your profile</Text>
+                    </View>
                     <Image
-                        source={{ uri: 'https://s3-alpha-sig.figma.com/img/3017/1de2/a7f6f3d95d4e31ba2ba32afe5e05330f?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=AQToRxf1L3KRlPt-RugV7copHvBpADvShn9golDxluE6q1F6Y6sjqbH1sVXsBmX8RC6rAiINpAw2KhljekCeOURrV21EikV~D4ZFjCF7ZLnhKVie61fQ8HLW84Jf2qIQ0dh1XdIQYO4cEkMJ-xwygxIf8wJ4PqIsJj7eiwjQT-VuyaI~hF8E-YfwxZyNhCNfXVP1rH6FhDJ8NUU5yo2Xw96tsVlftHV~gx0Ra5a7~lYpuXa8dXG1WUdHida-~NiNg1zGRQJE69rd4GTwnTtLjiOX3E~DHDo-r8txb95UP-gPOJAik~SBJUxFWm5n5ZZgUatFxDboUfXTIH8tk8rFHg__' }}
-                        style={styles.profileCoverPhoto}
+                        style={styles.headerAvatar}
+                        source={{
+                            uri: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=mLvOM1FDQUQ9w6X-ZQNfuBhWPHSAL3aXLlC07R81IuXSXwbZxPT4mIz4g4UI3fxspyyn35oAmkAq~a2IHfWDDfrBQou~lhSwLXWzrgHbEIXsm-Ycw0oDw69I8YvfKPIQTokUORFcUvSS8AZP6HXvhD3VGXidSHBg69iqIIWKWu1HZkNILEcTDxT5FOeSKw7Jb50JS6Gcd95fcCNRvPYsdE4Pt086H5JAFqpaUGPDQBsaF2-J6MdnPrzJJruHhABCEQtZfGBIev3TMO-O18E4Jf8p8CJfHDRfMmBURsmsleTiM26CmJRS2d4YRcIR0XuLY1vCKG2KHBqUPpjIYvRgmw__', // Use user avatar if available
+                        }}
                     />
                 </View>
-            </View>
 
-            <View style={styles.profileAvatarContainer}>
-                <Image
-                    style={styles.profileAvatar}
-                    source={{
-                        uri: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=mLvOM1FDQUQ9w6X-ZQNfuBhWPHSAL3aXLlC07R81IuXSXwbZxPT4mIz4g4UI3fxspyyn35oAmkAq~a2IHfWDDfrBQou~lhSwLXWzrgHbEIXsm-Ycw0oDw69I8YvfKPIQTokUORFcUvSS8AZP6HXvhD3VGXidSHBg69iqIIWKWu1HZkNILEcTDxT5FOeSKw7Jb50JS6Gcd95fcCNRvPYsdE4Pt086H5JAFqpaUGPDQBsaF2-J6MdnPrzJJruHhABCEQtZfGBIev3TMO-O18E4Jf8p8CJfHDRfMmBURsmsleTiM26CmJRS2d4YRcIR0XuLY1vCKG2KHBqUPpjIYvRgmw__'
-                    }}
-                />
-            </View>
-
-            <KeyboardAvoidingView style={{
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#F51F4624',
-                borderWidth: 0.8,
-                borderColor: '#FFFFFF',
-                borderRadius: 10,
-                flex: 1,
-                zIndex: 1,
-            }}>
-                <View style={styles.statsContainer}>
-                    <View style={styles.stat}>
-                        <Text style={styles.statNumber}>{user.followers > 0 ? user.followers : 0}</Text>
-                        <Text style={styles.statLabel}>Followers</Text>
-                    </View>
-                    <View style={styles.stat}>
-                        <Text style={styles.statNumber}>{user.following > 0 ? user.following : 0}</Text>
-                        <Text style={styles.statLabel}>Following</Text>
+                {/* Profile Info */}
+                <View style={styles.profileContainer}>
+                    <View style={styles.profileCoverPhotoContainer}>
+                        <Image
+                            source={{ uri: 'https://s3-alpha-sig.figma.com/img/3017/1de2/a7f6f3d95d4e31ba2ba32afe5e05330f?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=AQToRxf1L3KRlPt-RugV7copHvBpADvShn9golDxluE6q1F6Y6sjqbH1sVXsBmX8RC6rAiINpAw2KhljekCeOURrV21EikV~D4ZFjCF7ZLnhKVie61fQ8HLW84Jf2qIQ0dh1XdIQYO4cEkMJ-xwygxIf8wJ4PqIsJj7eiwjQT-VuyaI~hF8E-YfwxZyNhCNfXVP1rH6FhDJ8NUU5yo2Xw96tsVlftHV~gx0Ra5a7~lYpuXa8dXG1WUdHida-~NiNg1zGRQJE69rd4GTwnTtLjiOX3E~DHDo-r8txb95UP-gPOJAik~SBJUxFWm5n5ZZgUatFxDboUfXTIH8tk8rFHg__' }}
+                            style={styles.profileCoverPhoto}
+                        />
+                        {/* Adjusted Avatar Position */}
+                        <View style={styles.profileAvatarContainer}>
+                            <Image
+                                style={styles.profileAvatar}
+                                source={{
+                                    uri: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=mLvOM1FDQUQ9w6X-ZQNfuBhWPHSAL3aXLlC07R81IuXSXwbZxPT4mIz4g4UI3fxspyyn35oAmkAq~a2IHfWDDfrBQou~lhSwLXWzrgHbEIXsm-Ycw0oDw69I8YvfKPIQTokUORFcUvSS8AZP6HXvhD3VGXidSHBg69iqIIWKWu1HZkNILEcTDxT5FOeSKw7Jb50JS6Gcd95fcCNRvPYsdE4Pt086H5JAFqpaUGPDQBsaF2-J6MdnPrzJJruHhABCEQtZfGBIev3TMO-O18E4Jf8p8CJfHDRfMmBURsmsleTiM26CmJRS2d4YRcIR0XuLY1vCKG2KHBqUPpjIYvRgmw__'
+                                }}
+                            />
+                        </View>
                     </View>
                 </View>
 
-                <View style={{
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '5%',
-                    width: '100%'
-                }}>
-                    <View style={{
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '1%',
-                        marginVertical: '5%'
-                    }}>
+                <View style={styles.profileInfoContainer}>
+                    <View style={styles.statsContainer}>
+                        <View style={styles.stat}>
+                            <Text style={styles.statNumber}>{user.followers > 0 ? user.followers : 0}</Text>
+                            <Text style={styles.statLabel}>Followers</Text>
+                        </View>
+                        <View style={styles.stat}>
+                            <Text style={styles.statNumber}>{user.following > 0 ? user.following : 0}</Text>
+                            <Text style={styles.statLabel}>Following</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.bioSection}>
                         <Text style={styles.username}>{user.username ? `@${user.username}` : '@Username'}</Text>
                         <TextInput
                             style={styles.bioInput}
@@ -105,14 +76,7 @@ const OnBoardingProfile = () => {
                     </View>
 
                     {/* Posts Section */}
-                    <View style={{
-                        flexDirection: 'column',
-                        justifyContent: 'flex-start',
-                        alignItems: 'flex-start',
-                        gap: '5%',
-                        width: '100%',
-                        paddingHorizontal: 20
-                    }}>
+                    <View style={styles.postsHeader}>
                         <Text style={{ fontSize: 15, fontWeight: '500', color: '#FFFFFF' }}>Posts</Text>
                         <View style={{ height: 1, width: '100%', backgroundColor: '#494949' }}></View>
                     </View>
@@ -121,13 +85,13 @@ const OnBoardingProfile = () => {
                         <Text style={styles.noPostsText}>0 Posts</Text>
                         <Text style={styles.noPostsDescription}>Your posts will be added here</Text>
                     </View>
+                    
+                      {/* Button */}
+                  <TouchableOpacity style={styles.button} onPress={handleNextPress}>
+                      <Text style={styles.buttonText}>All set .. Go!</Text>
+                  </TouchableOpacity>
                 </View>
-            </KeyboardAvoidingView>
-
-            {/* Button */}
-            <TouchableOpacity style={styles.button} onPress={handleNextPress}>
-                <Text style={styles.buttonText}>All set .. Go!</Text>
-            </TouchableOpacity>
+            </ScrollView>
         </KeyboardAvoidingView>
     );
 };
@@ -147,6 +111,12 @@ const styles = StyleSheet.create({
     borderBottomColor: '#4A4A4A4D',
     paddingHorizontal: '7%',
   },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '30%',
+  },
   headerTitle: {
     fontSize: 16,
     fontWeight: '400',
@@ -161,6 +131,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     alignItems: 'center',
+    zIndex: 2
   },
   profileCoverPhotoContainer: {
     width: '100%',
@@ -175,10 +146,10 @@ const styles = StyleSheet.create({
   },
   profileAvatarContainer: {
     position: 'absolute',
-    top: '20%', // Positioning it above the cover photo
+    top: 120, // Adjust as needed
     left: '50%',
-    marginLeft: -50, // To center the avatar
-    zIndex: 10
+    transform: [{ translateX: -50 }], // To center the avatar
+    zIndex: 100
   },
   profileAvatar: {
     width: 100,
@@ -187,11 +158,22 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: '#F51F46',
   },
+  profileInfoContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F51F4624',
+    borderWidth: 0.8,
+    borderColor: '#FFFFFF',
+    borderRadius: 10,
+    flex: 1,
+    zIndex: 1,
+  },
   statsContainer: {
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-around',
-    marginTop: '-10%', // To provide space below the avatar
+    marginTop: '35%'
   },
   stat: {
     alignItems: 'center',
@@ -211,10 +193,24 @@ const styles = StyleSheet.create({
     color: 'white',
     marginTop: 10,
   },
-  bioPlaceholder: {
+  bioSection: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  bioInput: {
     fontSize: 14,
-    color: '#AAAAAA',
-    marginTop: 5,
+    color: '#FFFFFF',
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    margin: 0,
+  },
+  postsHeader: {
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: '5%',
+    width: '100%',
+    paddingHorizontal: 20,
   },
   postsContainer: {
     alignItems: 'center',
@@ -222,7 +218,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     marginBottom: 30,
     width: '90%',
-    minHeight: '50%'
+    minHeight: '50%',
   },
   noPostsText: {
     fontSize: 16,
@@ -240,24 +236,17 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginBottom: 10,
     width: '90%',
     alignSelf: 'center',
+    zIndex: 200,
     position: 'absolute',
-    bottom: '1%'
+    bottom: '2%'
   },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
   },
-  bioInput: {
-    fontSize: 14,
-    color: '#FFFFFF',
-    paddingVertical: 0,
-    paddingHorizontal: 0,
-    margin: 0,
-  }
 });
 
 export default OnBoardingProfile;
