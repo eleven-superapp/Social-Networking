@@ -31,7 +31,15 @@ const userSchema = new mongoose.Schema({
         },
     ],
     friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', }],
-    miniAppName: { type: String, enum: ['wellness', 'budgeting', 'mindfull', 'productivity', 'social'] }
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', }],
+    followings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', }],
+    miniAppName: { type: String, enum: ['wellness', 'budgeting', 'mindfull', 'productivity', 'social'] },
+    posts: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post'
+        }
+    ]
 }, { timestamps: true });
 
 
