@@ -41,6 +41,7 @@ export default function HomeScreen() {
         };
 
         fetchPosts();
+        console.log("fetched posts:", posts);
     }, []); // Empty dependency array means this effect runs once on mount
 
     if (loading) {
