@@ -11,6 +11,7 @@ import axios from "axios";
 import { UserContext } from "../../../context/userContextAPI";
 import { IP } from "../../../constants/constants";
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
   const [username, setUserName] = useState("");
@@ -19,38 +20,50 @@ const LoginScreen = () => {
   const navigation = useNavigation();
   const { setUser } = useContext(UserContext);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log("Username:", username);
     console.log("Password:", password);
     console.log("IP address:", IP);
-  },[username,password])
+  }, [username, password]);
+
   const handleLogin = async () => {
     setLoading(true);
-    await axios
-      .post(
-        `http://${IP}:6969/login`, 
-        { username: username, password:password },
+    try {
+      const res = await axios.post(
+        `http://${IP}:6969/login`,
+        { username: username, password: password },
         {
-            headers: {
-              "Content-Type": "application/json; charset=utf-8", // Define the Content-Type header
-            },
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          withCredentials: true, // This will allow cookies to be sent and received
         }
-        )
-      .then(async (res) => {
-        if (res.status === 200) {
-          console.log(res.data.user._id);
-          await axios
-            .get(`http://${IP}:5000/api/social/v1/${res.data.user._id}`)
-            .then((res) => {
-              setUser(res.data);
-              setLoading(false);
-              navigation.navigate("OnBoarding");
-            });
-        } else {
-          console.warn("Failed to login");
-          setLoading(false);
-        }
-      });
+      );
+
+      if (res.status === 200) {
+        const { token, user } = res.data;
+        
+        // Store the JWT token in AsyncStorage
+        await AsyncStorage.setItem('jwt', token);
+
+        // Fetch user data
+        const userRes = await axios.get(`http://${IP}:5000/api/social/v1/${user._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Use the token in the Authorization header
+          },
+        });
+
+        setUser(userRes.data);
+        setLoading(false);
+        navigation.navigate("OnBoarding");
+      } else {
+        console.warn("Failed to login");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setLoading(false);
+    }
   };
 
   return (
