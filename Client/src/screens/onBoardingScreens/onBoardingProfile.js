@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView,
 import { Menu, Info } from 'lucide-react-native'; // Import the icons you need
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../../context/userContextAPI'; // Adjust the path as necessary
+import axios from 'axios'; // Import axios for making HTTP requests
+import { IP } from '../../../constants/constants'; // Import your IP address or base URL
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OnBoardingProfile = () => {
     const { user, setUser } = useContext(UserContext); // Access user and setUser from context
@@ -10,9 +13,38 @@ const OnBoardingProfile = () => {
 
     const navigation = useNavigation();
 
-    const handleNextPress = () => {
+    // Function to update the bio in the database
+    const updateUserBio = async () => {
+        try {
+            const token = await AsyncStorage.getItem('jwt'); // Retrieve the JWT token from AsyncStorage
+            if (!token) {
+                throw new Error('No token found');
+            }
+
+            const response = await axios.put(`http://${IP}:5000/api/social/v1/user/edit/${user._id}`, { // Use the appropriate API endpoint
+                bio: bio,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.status === 200) {
+                setUser(prevUser => ({ ...prevUser, bio: bio })); // Update the user context with the new bio
+                console.log('Bio updated successfully');
+            }
+        } catch (error) {
+            console.error('Failed to update bio:', error);
+        }
+    };
+
+    // Function to handle the Next button press
+    const handleNextPress = async () => {
+        if (user.bio !== bio) {
+            await updateUserBio(); // Update the bio if it has been changed
+        }
         navigation.navigate('Home Screen');
-    }
+    };
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 20}>
@@ -28,7 +60,7 @@ const OnBoardingProfile = () => {
                     <Image
                         style={styles.headerAvatar}
                         source={{
-                            uri: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=mLvOM1FDQUQ9w6X-ZQNfuBhWPHSAL3aXLlC07R81IuXSXwbZxPT4mIz4g4UI3fxspyyn35oAmkAq~a2IHfWDDfrBQou~lhSwLXWzrgHbEIXsm-Ycw0oDw69I8YvfKPIQTokUORFcUvSS8AZP6HXvhD3VGXidSHBg69iqIIWKWu1HZkNILEcTDxT5FOeSKw7Jb50JS6Gcd95fcCNRvPYsdE4Pt086H5JAFqpaUGPDQBsaF2-J6MdnPrzJJruHhABCEQtZfGBIev3TMO-O18E4Jf8p8CJfHDRfMmBURsmsleTiM26CmJRS2d4YRcIR0XuLY1vCKG2KHBqUPpjIYvRgmw__', // Use user avatar if available
+                          uri: `${user.profilePicture}` // Use user avatar if available
                         }}
                     />
                 </View>
@@ -45,7 +77,7 @@ const OnBoardingProfile = () => {
                             <Image
                                 style={styles.profileAvatar}
                                 source={{
-                                    uri: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=mLvOM1FDQUQ9w6X-ZQNfuBhWPHSAL3aXLlC07R81IuXSXwbZxPT4mIz4g4UI3fxspyyn35oAmkAq~a2IHfWDDfrBQou~lhSwLXWzrgHbEIXsm-Ycw0oDw69I8YvfKPIQTokUORFcUvSS8AZP6HXvhD3VGXidSHBg69iqIIWKWu1HZkNILEcTDxT5FOeSKw7Jb50JS6Gcd95fcCNRvPYsdE4Pt086H5JAFqpaUGPDQBsaF2-J6MdnPrzJJruHhABCEQtZfGBIev3TMO-O18E4Jf8p8CJfHDRfMmBURsmsleTiM26CmJRS2d4YRcIR0XuLY1vCKG2KHBqUPpjIYvRgmw__'
+                                    uri: `${user.profilePicture}`
                                 }}
                             />
                         </View>
