@@ -23,7 +23,17 @@ const commentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Forum',
         required: true
-    }
+    },
+    upvotes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        unique: true
+    }],
+    downvotes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        unique: true
+    }],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Comment', commentSchema);

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import { ArrowUp, MessageCircle, Send, ArrowDown } from 'lucide-react-native'; // Import icons from Lucide
 import Header from '../../components/shared/Header';
@@ -6,10 +6,11 @@ import ThreeDots from '../../components/shared/ThreeDots';
 import VerticalDots from '../../components/shared/VerticalDots';
 import Carousel from 'react-native-reanimated-carousel';
 
-const CommentScreen = ({ route,navigation }) => {
+const CommentScreen = ({ route, navigation }) => {
   const post = route.params.post; // Extract the post object from the route parameters
   const selectedButton = route.params.selectedButton;
-  const comment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+
+  console.log("Comments in post:", post.comments);
 
   const width = Dimensions.get('window').width; // Get the device width for carousel width
 
@@ -55,8 +56,6 @@ const CommentScreen = ({ route,navigation }) => {
     );
   };
 
-
-
   return (
     <View style={styles.container}>
       <Header />
@@ -83,36 +82,36 @@ const CommentScreen = ({ route,navigation }) => {
             {post.content}
           </Text>
 
-        {post.media.length > 1 ? (
-        <View style={{ position: 'relative' }}>
-        <Carousel
-          loop={false}
-          width={width}
-          height={300}
-          autoPlay={false}
-          data={post.media}
-          scrollAnimationDuration={1000}
-          onSnapToItem={(index) => setCurrentIndex(index)} // Update current index
-          renderItem={({ item }) => (
-            <LazyLoadImage uri={item} style={styles.postImage} />
-          )}
-        />
-        <DotIndicator total={post.media.length} currentIndex={currentIndex} />
-      </View>
+          {post.media.length > 1 ? (
+            <View style={{ position: 'relative' }}>
+              <Carousel
+                loop={false}
+                width={width}
+                height={300}
+                autoPlay={false}
+                data={post.media}
+                scrollAnimationDuration={1000}
+                onSnapToItem={(index) => setCurrentIndex(index)} // Update current index
+                renderItem={({ item }) => (
+                  <LazyLoadImage uri={item} style={styles.postImage} />
+                )}
+              />
+              <DotIndicator total={post.media.length} currentIndex={currentIndex} />
+            </View>
           ) : (
             <LazyLoadImage uri={post.media[0]} style={styles.postImage} />
           )}
 
           <View style={styles.postActions}>
-            <View style={{flexDirection: 'row', gap: '10%'}}>
+            <View style={{ flexDirection: 'row', gap: '10%' }}>
               <TouchableOpacity style={styles.actionButton}>
                 <ArrowDown
-                size={20}
-                color={ selectedButton=="DisLike"?'#F51F46':'#C3BABA'} />
+                  size={20}
+                  color={selectedButton === "DisLike" ? '#F51F46' : '#C3BABA'} />
                 <Text style={styles.actionText}>{post.downvotes.length}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.actionButton}>
-                <ArrowUp color={ selectedButton=="Like"?'#F51F46':'#C3BABA'} size={20} />
+                <ArrowUp color={selectedButton === "Like" ? '#F51F46' : '#C3BABA'} size={20} />
                 <Text style={styles.actionText}>{post.upvotes.length}</Text>
               </TouchableOpacity>
             </View>
@@ -122,36 +121,39 @@ const CommentScreen = ({ route,navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
               <Image source={require('../../../assets/images/Share.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
-              <Text style={styles.actionText}>{post.shares.length}</Text> 
+              <Text style={styles.actionText}>{post.shares.length}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.commentSection}>
-          {Array(3).fill(0).map((_, index) => (
+          {post.comments.map((comment, index) => (
             <View key={index} style={styles.commentContainer}>
               <View style={styles.commentLeftLine} />
               <Image
-                source={{ uri: post.profilePictureUrl }}
+                source={{ uri: comment.author.profilePicture }}
                 style={styles.avatarSmall}
               />
               <View style={styles.commentContent}>
                 <View style={styles.commentHeader}>
-                  <Text style={styles.commentUsername}>{post.user}</Text>
-                  <Text style={styles.commentTime}>{post.time}</Text>
+                  <Text style={styles.commentUsername}>{comment.author.username}</Text>
+                  <Text style={styles.commentTime}>{new Date(comment.createdAt).toLocaleString()}</Text>
                 </View>
                 <Text style={styles.commentText}>
-                  {comment}
+                  {comment.content}
                 </Text>
                 
                 <View style={styles.commentActions}>
                   <TouchableOpacity style={styles.commentActionButton}>
                     <ArrowUp color="#F51F46" size={20} />
-                    <Text style={styles.commentActionText}>56.9k</Text> 
+                    <Text style={styles.commentActionText}>{comment.upvotes.length}</Text>
+                    <ArrowDown color="white" size={20} />
+                    <Text style={styles.commentActionText}>{comment.downvotes.length}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
-                  onPress={()=>navigation.navigate("Reply Screen",{comment:comment})}
-                  style={styles.commentActionButton}>
+                    onPress={() => navigation.navigate("Reply Screen", { comment })}
+                    style={styles.commentActionButton}
+                  >
                     <Image source={require('../../../assets/images/Reply.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
                     <Text style={styles.commentReplyText}>Reply</Text> 
                   </TouchableOpacity>
@@ -160,26 +162,27 @@ const CommentScreen = ({ route,navigation }) => {
 
                 {/* Replies Section */}
                 <View style={{ marginTop: 10 }}>
-                  {Array(3).fill(0).map((_, replyIndex) => (
+                  {comment.replies && comment.replies.map((reply, replyIndex) => (
                     <View key={replyIndex} style={styles.replyContainer}>
                       <View style={styles.replyLeftLine} />
                       <Image
-                        source={{ uri: post.profilePictureUrl }}
+                        source={{ uri: reply.author.profilePicture }}
                         style={styles.avatarSmall}
                       />
                       <View style={styles.replyContent}>
                         <View style={styles.commentHeader}>
-                          <Text style={styles.commentUsername}>{post.user}</Text>
-                          <Text style={styles.commentTime}>{post.time}</Text>
+                          <Text style={styles.commentUsername}>{reply.author.username}</Text>
+                          <Text style={styles.commentTime}>{new Date(reply.createdAt).toLocaleString()}</Text>
                         </View>
                         <Text style={styles.commentText}>
-                          Reply to the comment here.
+                          {reply.content}
                         </Text>
                         <View style={styles.commentActions}>
                           <TouchableOpacity style={styles.commentActionButton}>
                             <ArrowUp color="#F51F46" size={20} />
-                            <Text style={styles.commentActionText}>10k</Text>
+                            <Text style={styles.commentActionText}>{reply.upvotes.length}</Text>
                             <ArrowDown color="white" size={20} />
+                            <Text style={styles.commentActionText}>{reply.downvotes.length}</Text>
                           </TouchableOpacity>
                           <TouchableOpacity style={styles.commentActionButton}>
                             <Image source={require('../../../assets/images/Reply.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
@@ -262,7 +265,7 @@ const styles = StyleSheet.create({
   },
   postImage: {
     width: '100%',
-    height: '100%',
+    height: 300,
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -286,7 +289,7 @@ const styles = StyleSheet.create({
   commentContainer: {
     flexDirection: 'row',
     marginBottom: 15,
-    paddingLeft: 15,
+    paddingLeft: '5%',
   },
   commentLeftLine: {
     position: 'absolute',
@@ -298,12 +301,12 @@ const styles = StyleSheet.create({
   },
   commentContent: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: '2%',
   },
   commentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5,
+    marginBottom: '2%',
   },
   commentUsername: {
     color: '#fff',
@@ -333,19 +336,19 @@ const styles = StyleSheet.create({
   },
   commentReplyText: {
     color: '#C3BABA',
-    marginLeft: 5,
+    marginLeft: '1%',
   },
   replyContainer: {
     flexDirection: 'row',
     marginBottom: 10,
-    marginLeft: 30, // Margin from the left to indent replies
+    marginLeft: '5%', // Margin from the left to indent replies
     marginRight: 10, // Margin from the right
-    paddingLeft: 15,
+    paddingLeft: '1%',
     position: 'relative',
   },
   replyLeftLine: {
     position: 'absolute',
-    left: -15,
+    left: '-5%',
     top: 0,
     bottom: 0,
     width: 2,
