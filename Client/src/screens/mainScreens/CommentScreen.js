@@ -1,14 +1,62 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import { ArrowUp, MessageCircle, Send, ArrowDown } from 'lucide-react-native'; // Import icons from Lucide
 import Header from '../../components/shared/Header';
 import ThreeDots from '../../components/shared/ThreeDots';
 import VerticalDots from '../../components/shared/VerticalDots';
+import Carousel from 'react-native-reanimated-carousel';
 
 const CommentScreen = ({ route,navigation }) => {
   const post = route.params.post; // Extract the post object from the route parameters
   const selectedButton = route.params.selectedButton;
   const comment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+
+  const width = Dimensions.get('window').width; // Get the device width for carousel width
+
+  const [currentIndex, setCurrentIndex] = useState(0); // State to track the current carousel index
+
+  const LazyLoadImage = ({ uri, style }) => {
+    const [loading, setLoading] = useState(true); // State to track if the image is loading
+  
+    return (
+      <View style={[style, styles.imageContainer]}>
+        {loading && (
+          // Display a grey background and activity indicator while the image is loading
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color="#ffffff" />
+          </View>
+        )}
+        <Image
+          source={{ uri }}
+          style={[style, loading && styles.hiddenImage]} // Hide the image while it's loading
+          onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
+          onLoad={() => {
+            console.log('Image loaded:', uri);
+            setLoading(false); // Set loading to false when the image is loaded
+          }}
+        />
+      </View>
+    );
+  };
+
+  const DotIndicator = ({ total, currentIndex }) => {
+    return (
+      <View style={styles.dotsContainer}>
+        {Array.from({ length: total }).map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.dot,
+              currentIndex === index ? styles.activeDot : styles.inactiveDot,
+            ]}
+          />
+        ))}
+      </View>
+    );
+  };
+
+
+
   return (
     <View style={styles.container}>
       <Header />
@@ -18,43 +66,63 @@ const CommentScreen = ({ route,navigation }) => {
         <View style={styles.postContainer}>
           <View style={styles.postHeader}>
             <Image
-              source={{ uri: post.profilePictureUrl }}
+              source={{ uri: post.author.profilePicture }}
               style={styles.avatar}
             />
             <View style={styles.postInfo}>
-              <Text style={styles.username}>{post.user}</Text>
-              <Text style={styles.time}>{post.time}</Text>
+              <Text style={styles.username}>{post.author.username}</Text>
+              <Text style={styles.time}>{new Date(post.createdAt).toLocaleString()}</Text>
             </View>
             <View style={styles.tag}>
-              <Text style={styles.tagText}>{post.category}</Text>
+              <Text style={styles.tagText}>{post.forum.title}</Text>
             </View>
             <ThreeDots />
           </View>
 
           <Text style={styles.postText}>
-            {post.text}
+            {post.content}
           </Text>
 
-          <Image
-            source={{ uri: post.imageUrl }}
-            style={styles.postImage}
-          />
+        {post.media.length > 1 ? (
+        <View style={{ position: 'relative' }}>
+        <Carousel
+          loop={false}
+          width={width}
+          height={300}
+          autoPlay={false}
+          data={post.media}
+          scrollAnimationDuration={1000}
+          onSnapToItem={(index) => setCurrentIndex(index)} // Update current index
+          renderItem={({ item }) => (
+            <LazyLoadImage uri={item} style={styles.postImage} />
+          )}
+        />
+        <DotIndicator total={post.media.length} currentIndex={currentIndex} />
+      </View>
+          ) : (
+            <LazyLoadImage uri={post.media[0]} style={styles.postImage} />
+          )}
 
           <View style={styles.postActions}>
-            <TouchableOpacity style={styles.actionButton}>
-              <ArrowDown
-              size={20}
-              color={ selectedButton=="DisLike"?'#F51F46':'#C3BABA'} />
-              <ArrowUp color={ selectedButton=="Like"?'#F51F46':'#C3BABA'} size={20} />
-              <Text style={styles.actionText}>{post.likes}</Text>
-            </TouchableOpacity>
+            <View style={{flexDirection: 'row', gap: '10%'}}>
+              <TouchableOpacity style={styles.actionButton}>
+                <ArrowDown
+                size={20}
+                color={ selectedButton=="DisLike"?'#F51F46':'#C3BABA'} />
+                <Text style={styles.actionText}>{post.downvotes.length}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButton}>
+                <ArrowUp color={ selectedButton=="Like"?'#F51F46':'#C3BABA'} size={20} />
+                <Text style={styles.actionText}>{post.upvotes.length}</Text>
+              </TouchableOpacity>
+            </View>
             <TouchableOpacity style={styles.actionButton}>
               <MessageCircle color="#F51F46" size={20} />
-              <Text style={[styles.actionText, { color: '#F51F46' }]}>{post.comments}</Text>
+              <Text style={[styles.actionText, { color: '#F51F46' }]}>{post.comments.length}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
               <Image source={require('../../../assets/images/Share.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
-              <Text style={styles.actionText}>{post.shares}</Text> 
+              <Text style={styles.actionText}>{post.shares.length}</Text> 
             </TouchableOpacity>
           </View>
         </View>
@@ -194,7 +262,7 @@ const styles = StyleSheet.create({
   },
   postImage: {
     width: '100%',
-    height: 200,
+    height: '100%',
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -312,6 +380,25 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: '5%',
+    marginTop: '2%'
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: '#ffffff', // Active dot color
+  },
+  inactiveDot: {
+    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Inactive dot color
   },
 });
 
