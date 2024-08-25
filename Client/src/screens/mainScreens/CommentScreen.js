@@ -1,39 +1,93 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
-import { ArrowUp, MessageCircle, Send, ArrowDown } from 'lucide-react-native'; // Import icons from Lucide
+import { ArrowUp, MessageCircle, Send, ArrowDown } from 'lucide-react-native';
 import Header from '../../components/shared/Header';
 import ThreeDots from '../../components/shared/ThreeDots';
 import VerticalDots from '../../components/shared/VerticalDots';
 import Carousel from 'react-native-reanimated-carousel';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserContext } from '../../../context/userContextAPI';
+import { IP } from '../../../constants/constants';
 
 const CommentScreen = ({ route, navigation }) => {
-  const post = route.params.post; // Extract the post object from the route parameters
+  const post = route.params.post;
   const selectedButton = route.params.selectedButton;
 
-  console.log("Comments in post:", post.comments);
+  const width = Dimensions.get('window').width;
 
-  const width = Dimensions.get('window').width; // Get the device width for carousel width
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [addComment, setAddComment] = useState('');
+  const [commentLoading, setCommentLoading] = useState(false);
+  const { user } = useContext(UserContext);
 
-  const [currentIndex, setCurrentIndex] = useState(0); // State to track the current carousel index
+  const [comments, setComments] = useState(post.comments);
+
+  useEffect(() => {
+    console.log("Comments or post updated:", comments, post);
+  }, [comments, post]);
+
+  const fetchPostData = async () => {
+    try {
+      const response = await axios.get(`http://${IP}:5000/api/social/v1/posts/${post._id}`);
+      setComments(response.data.post.comments);
+    } catch (error) {
+      console.log("Error fetching updated post data:", error);
+    }
+  };
+
+  const handleAddPress = async () => {
+    setCommentLoading(true);
+    try {
+      const token = await AsyncStorage.getItem('jwt');
+      if (!token) {
+        throw new Error('No token found');
+      }
+      
+      const requestData = {
+        content: addComment,
+        author: user._id, 
+        postId: post._id, 
+        forumId: post.forum._id,
+      };
+
+      const response = await axios.post(`http://${IP}:5000/api/social/v1/comment/`, requestData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setComments(response.data.post.comments);
+      setCommentLoading(false);
+      setAddComment('');
+
+      // Optionally, fetch updated post data to ensure sync
+      await fetchPostData();
+    } catch (error) {
+      console.log("Error while posting comment:", error);
+      setCommentLoading(false);
+    } finally {
+      setCommentLoading(false);
+      setAddComment('');
+    }
+  }
 
   const LazyLoadImage = ({ uri, style }) => {
-    const [loading, setLoading] = useState(true); // State to track if the image is loading
+    const [loading, setLoading] = useState(true);
   
     return (
       <View style={[style, styles.imageContainer]}>
         {loading && (
-          // Display a grey background and activity indicator while the image is loading
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color="#ffffff" />
           </View>
         )}
         <Image
           source={{ uri }}
-          style={[style, loading && styles.hiddenImage]} // Hide the image while it's loading
+          style={[style, loading && styles.hiddenImage]}
           onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
           onLoad={() => {
-            console.log('Image loaded:', uri);
-            setLoading(false); // Set loading to false when the image is loaded
+            setLoading(false);
           }}
         />
       </View>
@@ -91,7 +145,7 @@ const CommentScreen = ({ route, navigation }) => {
                 autoPlay={false}
                 data={post.media}
                 scrollAnimationDuration={1000}
-                onSnapToItem={(index) => setCurrentIndex(index)} // Update current index
+                onSnapToItem={(index) => setCurrentIndex(index)}
                 renderItem={({ item }) => (
                   <LazyLoadImage uri={item} style={styles.postImage} />
                 )}
@@ -117,7 +171,7 @@ const CommentScreen = ({ route, navigation }) => {
             </View>
             <TouchableOpacity style={styles.actionButton}>
               <MessageCircle color="#F51F46" size={20} />
-              <Text style={[styles.actionText, { color: '#F51F46' }]}>{post.comments.length}</Text>
+              <Text style={[styles.actionText, { color: '#F51F46' }]}>{comments.length}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
               <Image source={require('../../../assets/images/Share.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
@@ -127,7 +181,7 @@ const CommentScreen = ({ route, navigation }) => {
         </View>
 
         <View style={styles.commentSection}>
-          {post.comments.map((comment, index) => (
+          {comments.map((comment, index) => (
             <View key={index} style={styles.commentContainer}>
               <View style={styles.commentLeftLine} />
               <Image
@@ -205,10 +259,18 @@ const CommentScreen = ({ route, navigation }) => {
           style={styles.commentInput}
           placeholder="Type your comment"
           placeholderTextColor="#aaa"
+          value={addComment}
+          onChangeText={(text) => setAddComment(text)}
         />
-        <TouchableOpacity style={styles.sendButton}>
-          <Send color="#F51F46" size={24} /> 
-        </TouchableOpacity>
+        {commentLoading ? (
+          <View style={[styles.loadingContainer, { marginLeft: '5%'}]}>
+            <ActivityIndicator size="small" color="#F51F46" />
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.sendButton} onPress={handleAddPress}>
+            <Send color="#F51F46" size={24} /> 
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
