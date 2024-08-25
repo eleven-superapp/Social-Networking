@@ -198,11 +198,6 @@ const Post = ({ post, currentUser  }) => {
       {/* Render media with Carousel */}
       {post.media.length > 1 ? (
         <View style={{ position: 'relative' }}>
-        <View style={styles.indicatorContainer}>
-          <Text style={styles.indicatorText}>
-            {currentIndex + 1} / {post.media.length}
-          </Text>
-        </View>
         <Carousel
           loop={false}
           width={width}
@@ -223,29 +218,29 @@ const Post = ({ post, currentUser  }) => {
 
       <View style={styles.postFooter}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Pressable onPress={handleDownvote} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity onPress={handleDownvote} style={{ flexDirection: 'row', alignItems: 'center' }}>
             <MoveDown color={selectedButton === "DisLike" ? '#F51F46' : '#C3BABA'} size={18} />
             <Text style={[styles.postFooterText, { color: selectedButton === "DisLike" ? '#F51F46' : '#C3BABA' }]}>
               {post.downvotes.length}
             </Text>
-          </Pressable>
-          <Pressable onPress={handleUpvote} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleUpvote} style={{ flexDirection: 'row', alignItems: 'center' }}>
             <MoveUp color={selectedButton === "Like" ? '#F51F46' : '#C3BABA'} size={18} style={{ marginLeft: 4 }} />
             <Text style={[styles.postFooterText, { color: selectedButton === "Like" ? '#F51F46' : '#C3BABA' }]}>
               {post.upvotes.length}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
-        <Pressable
+        <TouchableOpacity
           onPress={() => navigation.navigate("Comment Screen", { post: post, selectedButton: selectedButton })}
           style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MessageCircle color={'#FFFFFF'} size={20} />
           <Text style={styles.postFooterText}>{post.comments.length}</Text>
-        </Pressable>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image source={require('../../../assets/images/Share.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
-          <Text style={styles.postFooterText}>{post.shares || 0}</Text>
-        </View>
+          <Text style={styles.postFooterText}>{post.shares.length || 0}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -314,25 +309,9 @@ const styles = StyleSheet.create({
   seeLessText: {
     color: 'white',
   },
-  indicatorContainer: {
-    alignItems: 'center',
-    position: 'absolute', 
-    zIndex: 100,
-    color: '#EFBEBE',
-    paddingVertical: 4,
-    backgroundColor: '#400E17EE',
-    borderRadius: 15,
-    paddingHorizontal: 18,
-    top: '7%',
-    right: '2%'
-  },
-  indicatorText: {
-    color: '#C3BABA',
-    fontSize: 14,
-  },
   postImage: {
     width: '100%',
-    height: 200,
+    height: '100%',
     borderRadius: 10,
     marginTop: 10,
   },

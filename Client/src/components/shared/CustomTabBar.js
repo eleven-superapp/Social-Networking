@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
-import { Plus, Trophy, Bell, MessageCircle, User } from 'lucide-react-native';
+import { Plus, Trophy, Bell, MessageCircle, User, Home } from 'lucide-react-native';
 
 const CustomTabBar = (props) => {
   const navigation = useNavigation();
@@ -81,6 +81,8 @@ const CustomTabBar = (props) => {
     );
   };
 
+  const currentRoute = props.state.routeNames[props.state.index];
+
   return (
     <View style={styles.tabBarContainer}>
       <View style={styles.svgContainer}>
@@ -99,7 +101,11 @@ const CustomTabBar = (props) => {
 
         {/* Center button */}
         <TouchableOpacity onPress={handleCenterPress} style={styles.centerButton}>
-          <Plus color={'white'} size={30} />
+          {currentRoute === 'Home Screen' ? (
+            <Plus color={'white'} size={45} />
+          ) : (
+            <Home color={'white'} size={40} />
+          )}
         </TouchableOpacity>
 
         {/* Render right side icons */}
@@ -152,6 +158,7 @@ const styles = StyleSheet.create({
   iconTouchable: {
     alignItems: 'center',
     paddingVertical: 5,
+    gap: 2
   },
   centerButton: {
     width: 70,
