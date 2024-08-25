@@ -27,12 +27,12 @@ const commentSchema = new mongoose.Schema({
     upvotes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        unique: true
+        default: []
     }],
     downvotes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        unique: true
+        default: []
     }],
 }, { timestamps: true });
 
