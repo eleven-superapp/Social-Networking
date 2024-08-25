@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
-import { Plus, Trophy, Bell, MessageCircle, User } from 'lucide-react-native'; // Import icons from Lucide
+import { Plus, Trophy, Bell, MessageCircle, User } from 'lucide-react-native';
 
 const CustomTabBar = (props) => {
   const navigation = useNavigation();
@@ -16,7 +16,70 @@ const CustomTabBar = (props) => {
     }
   };
 
-  const currentRoute = props.state.routeNames[props.state.index];
+  // Separate routes into left and right sections
+  const leftRoutes = props.state.routes.slice(0, 2); // First two routes (Leaderboard, Updates)
+  const rightRoutes = props.state.routes.slice(2); // Last two routes (Chats, Profile)
+
+  const renderIcon = (route, index) => {
+    const isFocused = props.state.index === index;
+
+    const onPress = () => {
+      const event = props.navigation.emit({
+        type: 'tabPress',
+        target: route.key,
+      });
+
+      if (!isFocused && !event.defaultPrevented) {
+        props.navigation.navigate(route.name);
+      }
+    };
+
+    const onLongPress = () => {
+      props.navigation.emit({
+        type: 'tabLongPress',
+        target: route.key,
+      });
+    };
+
+    let IconComponent;
+    let label;
+    let additionalStyles = {};
+
+    if (route.name === 'Leaderboard') {
+      IconComponent = Trophy;
+      label = 'Leaderboard';
+      additionalStyles = { left: '-3%',top: '-6%' };
+    } else if (route.name === 'Updates') {
+      IconComponent = Bell;
+      label = 'Updates';
+      additionalStyles = { top: '-13%', right: '2%' };
+    } else if (route.name === 'Chats') {
+      IconComponent = MessageCircle;
+      label = 'Chats';
+      additionalStyles = { top: '-13%', left: '2%' };
+    } else if (route.name === 'Profile') {
+      IconComponent = User;
+      label = 'Profile';
+      additionalStyles = { right: '-3%',top: '-6%' };
+    }
+
+    if (!IconComponent) {
+      console.error(`IconComponent for ${route.name} is undefined`);
+      return null;
+    }
+
+    return (
+      <TouchableOpacity
+        key={index}
+        onPress={onPress}
+        onLongPress={onLongPress}
+        style={[styles.iconTouchable, additionalStyles]}
+      >
+        <IconComponent color={isFocused ? '#F51F46' : '#ffffff'} size={30} />
+        <Text style={{ color: isFocused ? '#F51F46' : '#ffffff', fontSize: 12 }}>{label}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.tabBarContainer}>
@@ -28,66 +91,22 @@ const CustomTabBar = (props) => {
           />
         </Svg>
       </View>
-      <View style={styles.iconContainer}>
-        {props.state.routes.map((route, index) => {
-          const isFocused = props.state.index === index;
+      <View style={styles.iconSection}>
+        {/* Render left side icons */}
+        <View style={styles.leftIcons}>
+          {leftRoutes.map((route, index) => renderIcon(route, index))}
+        </View>
 
-          const onPress = () => {
-            const event = props.navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-            });
+        {/* Center button */}
+        <TouchableOpacity onPress={handleCenterPress} style={styles.centerButton}>
+          <Plus color={'white'} size={30} />
+        </TouchableOpacity>
 
-            if (!isFocused && !event.defaultPrevented) {
-              props.navigation.navigate(route.name);
-            }
-          };
-
-          const onLongPress = () => {
-            props.navigation.emit({
-              type: 'tabLongPress',
-              target: route.key,
-            });
-          };
-
-          let IconComponent;
-          let label;
-          let style={};
-
-          if (route.name === 'Leaderboard') {
-            IconComponent = Trophy;
-            label = "Leaderboard";
-          } else if (route.name === 'Updates') {
-            IconComponent = Bell;
-            // style= {marginLeft:-10};
-            label = "Updates";
-          } else if (route.name === 'Chats') {
-            IconComponent = MessageCircle;
-            label = "Chats";
-          } else if (route.name === 'Profile') {
-            IconComponent = User;
-            label = "Profile";
-          }
-
-          if (route.name !== 'Home Screen') {
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={onPress}
-                onLongPress={onLongPress}
-                style={[styles.iconTouchable, style]}
-              >
-                <IconComponent color={isFocused ? '#F51F46' : '#ffffff'} size={30} />
-                <Text style={{ color: isFocused ? '#F51F46' : '#ffffff', fontSize: 12 }}>{label}</Text>
-              </TouchableOpacity>
-            );
-          }
-          return null; // Don't render the Home button here
-        })}
+        {/* Render right side icons */}
+        <View style={styles.rightIcons}>
+          {rightRoutes.map((route, index) => renderIcon(route, index + leftRoutes.length))}
+        </View>
       </View>
-      <TouchableOpacity onPress={handleCenterPress} style={styles.centerButton}>
-        <Plus color={'white'} size={30} />
-      </TouchableOpacity>
     </View>
   );
 };
@@ -113,24 +132,28 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
   },
-  iconContainer: {
+  iconSection: {
     flexDirection: 'row',
-    position: 'absolute',
-    bottom: 0,
+    alignItems: 'center',
     width: '100%',
-    height: '100%',
     justifyContent: 'space-between',
-    paddingHorizontal: 10,
+    paddingHorizontal: '1%',
+  },
+  leftIcons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    flex: 1,
+  },
+  rightIcons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    flex: 1,
   },
   iconTouchable: {
     alignItems: 'center',
     paddingVertical: 5,
   },
   centerButton: {
-    position: 'absolute',
-    bottom: 30,
-    left: '50%',
-    marginLeft: -35,
     width: 70,
     height: 70,
     borderRadius: 35,
@@ -142,8 +165,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3.84,
-    borderColor:'white',
-    borderWidth:3
+    borderColor: 'white',
+    borderWidth: 3,
+    marginBottom: '20%',
   },
 });
 

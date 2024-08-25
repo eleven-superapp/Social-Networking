@@ -43,7 +43,7 @@ const OnBoardingProfile = () => {
         if (user.bio !== bio) {
             await updateUserBio(); // Update the bio if it has been changed
         }
-        navigation.navigate('Home Screen');
+        navigation.navigate('Main');
     };
 
     return (
