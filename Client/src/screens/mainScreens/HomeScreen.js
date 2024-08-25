@@ -76,7 +76,7 @@ export default function HomeScreen() {
             {posts.length > 0 ? (
                 <FlatList
                     data={posts}
-                    renderItem={({ item }) => <Post post={item} />}
+                    renderItem={({ item }) => <Post post={item} currentUser={user} />}
                     keyExtractor={item => item._id} // Make sure _id is unique in your post schema
                 />
             ) : (

@@ -2,6 +2,8 @@ const Post = require("../../Models/Post");
 
 async function react(req, res) {
     try {
+        console.log("Reaction: ", req.body);
+        console.log("Adding reaction to post: ", req.body.reaction);
         const { reaction, postId, reacterId } = req.body;
         if (!reaction || !postId || !reacterId) {
             return res.status(400).json({ message: 'Bad Request. All credentials must be provided i.e., {reaction: "up" || "down", postId, and reacterId}' });
@@ -22,6 +24,9 @@ async function react(req, res) {
             post.upvotes.push(reacterId);
         } else if (reaction.toLowerCase() === "down") {
             post.downvotes.push(reacterId);
+        } else if (reaction.toLowerCase() === "neutral") {
+            post.upvotes.pop(reacterId);
+            post.downvotes.pop(reacterId);
         } else {
             return res.status(400).json({ message: 'Invalid reaction type' });
         }
