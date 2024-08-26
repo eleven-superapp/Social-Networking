@@ -1,15 +1,17 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
-
 import HomeScreen from '../../screens/mainScreens/HomeScreen';
 import LeaderboardScreen from '../../screens/Leaderbord';
 import ChatsScreen from '../../screens/Chats';
 import ProfileScreen from '../../screens/Profile';
 import UpdatesScreen from '../../screens/Updates';
-
 import CustomTabBar from './CustomTabBar';
-// import { Home } from 'lucide-react-native';
+import MessageNavigation from '../../navigations/MessageNavigator';
+import Updates from '../../screens/updates/Updates';
+import Profile from '../../screens/profile/Profile';
+import LeaderBoard from '../../screens/leaderboard/LeaderBoard';
+import MainScreensNavigator from '../../navigations/MainScreensNavigator';
 
 const Tab = createBottomTabNavigator();
 

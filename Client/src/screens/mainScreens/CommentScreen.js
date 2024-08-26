@@ -113,9 +113,9 @@ const CommentScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Header />
-      
+
       <ScrollView style={styles.contentContainer}>
-        
+
         <View style={styles.postContainer}>
           <View style={styles.postHeader}>
             <Image
@@ -196,7 +196,7 @@ const CommentScreen = ({ route, navigation }) => {
                 <Text style={styles.commentText}>
                   {comment.content}
                 </Text>
-                
+
                 <View style={styles.commentActions}>
                   <TouchableOpacity style={styles.commentActionButton}>
                     <ArrowUp color="#F51F46" size={20} />
@@ -239,7 +239,11 @@ const CommentScreen = ({ route, navigation }) => {
                             <Text style={styles.commentActionText}>{reply.downvotes.length}</Text>
                           </TouchableOpacity>
                           <TouchableOpacity style={styles.commentActionButton}>
-                            <Image source={require('../../../assets/images/Reply.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
+                            <Image
+                              source={require('../../../assets/images/Reply.png')}
+                              style={{ height: 20, width: 20 }}
+                              resizeMode='contain'
+                            />
                             <Text style={styles.commentReplyText}>Reply</Text>
                           </TouchableOpacity>
                           <VerticalDots />
@@ -277,6 +281,7 @@ const CommentScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  // Styles remain unchanged
   container: {
     flex: 1,
     backgroundColor: '#000', // Background color to match the theme
