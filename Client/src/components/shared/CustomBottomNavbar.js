@@ -34,10 +34,10 @@ const CustomBottomNavBar = () => {
         })}
       >
         <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
-        <Tab.Screen name="Updates" component={ChatsScreen} />
-        <Tab.Screen name="Chats" component={ProfileScreen} />
-        <Tab.Screen name="Profile" component={UpdatesScreen} />
-        <Tab.Screen name="Home Screen" component={HomeScreen} />
+        <Tab.Screen name="Updates" component={UpdatesScreen} />
+        <Tab.Screen name="Chats" component={MessageNavigation} />
+        <Tab.Screen name="Profile" component={ProfileScreen} />
+        <Tab.Screen name="Home" component={MainScreensNavigator} />
       </Tab.Navigator>
      
     </>

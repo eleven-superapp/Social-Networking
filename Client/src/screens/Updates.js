@@ -7,7 +7,7 @@ export default function UpdatesScreen() {
     return (
         <View style={styles.container}>
             <Header/>
-            <Text>Leaderboard screen</Text>
+            <Text>Updates screen</Text>
         </View>
     );
 }
