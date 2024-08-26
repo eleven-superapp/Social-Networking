@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import { Search, MoreHorizontal } from 'lucide-react-native'; // Assuming you are using lucide-react-native for icons
+import React, { useState } from 'react';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { Search, MoreHorizontal,MessageSquareMore, Plus } from 'lucide-react-native'; // Assuming you are using lucide-react-native for icons
 
 const imgUrl = 'https://s3-alpha-sig.figma.com/img/b228/6358/911220bbed3dc45b0c379d9c3472f6f8?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=LSNrLTzB9hcMmpd8qSkoxPwsrq0Z~VmWSb-f6mddqqPhDEHB15itBaAY-qCbn9N0ZmNeJRaLN2jg-ZEHqcoawai8cR1Ds1FKdvkjEHO382hoqQy2jPeqcVfBfTTLjarya-a7F-mLl6Zv-vZOOshNEPypAdC9TVTuFmBBFs3CpKadzjhx9dzlrRRfdlaKn7745mxKDaHiteAXdZB7iCLny8UR5MZPbUjhSeENlzvGNp7YjRGKvQY-gmpGD6qyYtdS7O4QxIwCtjr0fnN2WSQFA~OcgJKqwYChaNT52bd7cuD-9ZYzpIDLS8IYe6Ny7cnL0qhFBNYaTrxETWNiSZQErw__';
 
@@ -16,6 +16,7 @@ const groupsData = [
     public: true,
     members: 12340,
     joined: false,
+    category: 'Discussions',
   },
   {
     id: '2',
@@ -26,34 +27,74 @@ const groupsData = [
     public: true,
     members: 12340,
     joined: true,
+    category: 'Discussions',
+  },
+  {
+    id: '3',
+    title: 'Selenophiles',
+    location: 'E 11, Islamabad',
+    description: 'Where Moonlit Nights and the Magic of Stories Unite to Spark Imagination and Dreams',
+    image: imgUrl,
+    public: true,
+    members: 12340,
+    joined: false,
+    category: 'Discussions',
   },
   // Add more groups as needed
 ];
 
-const categories = ["Arts & Crafts","Sports & Fitness","Music","Arts & Crafts","Sports & Fitness","Music"]
+const categories = ["Arts & Crafts", "Sports & Fitness", "Music", "Arts & Crafts", "Sports & Fitness", "Music"]
 
 const GroupsScreen = () => {
-  const renderGroupCard = ({ item }) => (
+
+  const [selectedCategory, setSelectedCategory] = useState(0);
+
+  function getStyles(index){
+    let btnStyle = {backgroundColor:'#494949',borderColor:'#494949'};
+    if(selectedCategory==index){
+     btnStyle = {backgroundColor:'#C41938',borderColor:'#CECECE'}
+    }
+    return btnStyle
+  }
+
+  // function for dynamic rendering of join button. 
+  function handleJoin(index){
+    const joinStatus = groupsData[index].joined;
+    groupsData[index].joined = !joinStatus;
+  }
+
+  const renderGroupCard = ({ item,index }) => (
     <View style={styles.groupCard}>
       <View style={styles.groupHeader}>
         <Text style={styles.groupTitle}>{item.title}</Text>
-        <TouchableOpacity>
-          <MoreHorizontal color="#fff" size={20} />
-        </TouchableOpacity>
+
+        <View style={{flexDirection:'row',alignItems:'center'}} >
+
+          <View style={{flexDirection:'row',paddingHorizontal:10,alignItems:'center',backgroundColor:'#400E17',paddingVertical:6,borderRadius:18,marginRight:10}} >
+            <MessageSquareMore color={'#EFBEBE'} size={18} />
+            <Text style={{color:'#EFBEBE',marginLeft:4}} >{item.category}</Text>
+          </View>
+
+          <TouchableOpacity>
+            <MoreHorizontal color="#868686" size={20} />
+          </TouchableOpacity>
+        </View>
       </View>
       <Text style={styles.groupLocation}>{item.location}</Text>
       <Text style={styles.groupDescription}>{item.description}</Text>
       <Image source={{ uri: item.image }} style={styles.groupImage} />
       <View style={styles.groupFooter}>
         <View style={styles.membersContainer}>
-          <Image source={{uri:iconUrl}} style={styles.memberIcon} />
-          <Image source={{uri:iconUrl}} style={styles.memberIcon} />
-          <Image source={{uri:iconUrl}} style={styles.memberIcon} />
+          <Image source={{ uri: iconUrl }} style={styles.memberIcon} />
+          <Image source={{ uri: iconUrl }} style={styles.memberIcon} />
+          <Image source={{ uri: iconUrl }} style={styles.memberIcon} />
           <TouchableOpacity style={styles.addMemberButton}>
-            <Text style={styles.addMemberText}>+</Text>
+            <Plus color={'#FFFFFF97'} size={20} strokeWidth={2.5} />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={item.joined ? styles.joinedButton : styles.joinButton}>
+        <TouchableOpacity
+        onPress={()=>{handleJoin(index)}}
+        style={item.joined ? styles.joinedButton : styles.joinButton}>
           <Text style={styles.joinButtonText}>{item.joined ? 'Joined' : 'Join Group'}</Text>
         </TouchableOpacity>
       </View>
@@ -66,8 +107,11 @@ const GroupsScreen = () => {
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryContainer}>
         {
-          categories.map((category,index)=>{
-            return <TouchableOpacity key={index} style={styles.categoryButton}>
+          categories.map((category, index) => {
+            const btnStyle = getStyles(index);
+            return <TouchableOpacity
+            onPress={()=>setSelectedCategory(index)}
+            key={index} style={[styles.categoryButton,btnStyle]}>
               <Text style={styles.categoryText}>{category}</Text>
             </TouchableOpacity>
           })
@@ -143,12 +187,14 @@ const styles = StyleSheet.create({
   categoryContainer: {
     flexDirection: 'row',
     marginBottom: 10,
+    // flex:1
   },
   categoryButton: {
     backgroundColor: '#494949',
     borderRadius: 10,
-    padding: 10,
     marginRight: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 12, // Reduced from 15
   },
   activeCategoryButton: {
     backgroundColor: '#f4511e',
@@ -157,7 +203,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   categoryText: {
-    color: '#fff',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontSize: 16,
+    lineHeight: 20, // Added line height
   },
   activeCategoryText: {
     color: '#fff',
@@ -183,12 +232,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   groupLocation: {
-    color: '#888',
+    color: '#808080',
     fontSize: 14,
-    marginVertical: 5,
+    marginBottom: 8,
+    marginTop:-2
   },
   groupDescription: {
-    color: '#fff',
+    color: '#808080',
     fontSize: 14,
     marginBottom: 10,
   },
@@ -219,22 +269,26 @@ const styles = StyleSheet.create({
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    borderColor:'#FFFFFF87',
+    borderWidth:1
   },
   addMemberText: {
     color: '#fff',
     fontSize: 16,
   },
   joinButton: {
-    backgroundColor: '#f4511e',
+    backgroundColor: '#494949',
     borderRadius: 20,
-    paddingVertical: 5,
+    paddingVertical: 8,
     paddingHorizontal: 15,
   },
   joinedButton: {
-    backgroundColor: '#555',
+    // backgroundColor: '#555',
     borderRadius: 20,
     paddingVertical: 5,
     paddingHorizontal: 15,
+    borderColor:'#494949',
+    borderWidth:1
   },
   joinButtonText: {
     color: '#fff',
