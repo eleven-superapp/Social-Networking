@@ -14,12 +14,12 @@ const Header = () => {
         </TouchableOpacity>
         <Text style={styles.title}>Chatterbox</Text>
       </View>
-      <Image
+      {/* <Image
         source={{ uri: `${user?.profilePicture}` }}
         style={styles.profileImage}
         onError={(e) => console.log('Profile Image load error:', e.nativeEvent.error)} // Error handling
         onLoad={() => console.log('Profile Image loaded:', user.profilePicture)} // Log successful loads
-      />
+      /> */}
     </View>
   );
 };

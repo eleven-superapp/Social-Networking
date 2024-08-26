@@ -9,8 +9,8 @@ const CustomTabBar = (props) => {
 
   const handleCenterPress = () => {
     const currentRoute = props.state.routeNames[props.state.index];
-    if (currentRoute !== 'Home Screen') {
-      props.navigation.navigate('Home Screen');
+    if (currentRoute !== 'Home') { 
+      props.navigation.navigate('Home');
     } else {
       navigation.navigate('ExpenseScreen');
     }
@@ -161,6 +161,11 @@ const styles = StyleSheet.create({
     gap: 2
   },
   centerButton: {
+    position: 'absolute',
+    bottom: 30,
+    // left: '50%',
+    // right:'50%',
+    // marginLeft: -35,
     width: 70,
     height: 70,
     borderRadius: 35,
