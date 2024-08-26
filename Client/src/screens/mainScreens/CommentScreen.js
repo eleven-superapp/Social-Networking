@@ -330,6 +330,7 @@ const styles = StyleSheet.create({
     height: 300,
     borderRadius: 10,
     marginBottom: 10,
+    paddingRight: '7%'
   },
   postActions: {
     flexDirection: 'row',

@@ -1,9 +1,56 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import { ArrowLeft, List, Link, Image as ImageIcon, Video } from 'lucide-react-native'; // Use icons from lucide-react-native
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, Alert, Modal } from 'react-native';
+import { ArrowLeft, List, Link, Image as ImageIcon, Video } from 'lucide-react-native';
+import { launchImageLibrary } from 'react-native-image-picker'; // Import from react-native-image-picker
 
 const ReplyScreen = ({ route, navigation }) => {
-  const comment = route.params.comment; // Assuming the comment is passed via navigation params
+  const comment = route.params.comment;
+
+  const [reply, setReply] = useState('');
+  const [media, setMedia] = useState([]); // State to hold media items
+  const [modalVisible, setModalVisible] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [inputType, setInputType] = useState('');
+
+  const handleAddList = () => {
+    setInputType('list');
+    setModalVisible(true);
+  };
+
+  const handleAddLink = () => {
+    setInputType('link');
+    setModalVisible(true);
+  };
+
+  const handleModalSubmit = () => {
+    if (inputType === 'list' && inputValue) {
+      setReply(prevReply => `${prevReply}\n- ${inputValue}`);
+    } else if (inputType === 'link' && inputValue) {
+      setReply(prevReply => `${prevReply} ${inputValue}`);
+    }
+    setModalVisible(false);
+    setInputValue('');
+  };
+
+  const handleAddMedia = (type) => {
+    const options = {
+      mediaType: type,
+    };
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.assets && response.assets.length > 0) {
+        setMedia(prevMedia => [...prevMedia, response.assets[0]]);
+      }
+    });
+  };
+
+  const handleAddImage = () => handleAddMedia('photo');
+  const handleAddVideo = () => handleAddMedia('video');
+
+  console.log("Comment in reply screen:", comment);
 
   return (
     <View style={styles.container}>
@@ -13,18 +60,26 @@ const ReplyScreen = ({ route, navigation }) => {
           <ArrowLeft color="#fff" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Reply</Text>
-        <Image source={{ uri: comment.userProfilePic }} style={styles.userAvatar} />
+        {comment.author && comment.author.profilePicture && (
+          <Image source={{ uri: comment.author.profilePicture }} style={styles.userAvatar} />
+        )}
       </View>
 
       {/* Comment Section */}
       <View style={styles.commentSection}>
-        <Image
-          source={{ uri: comment.userProfilePic }}
-          style={styles.commentAvatar}
-        />
+        {comment.author && comment.author.profilePicture && (
+          <Image
+            source={{ uri: comment.author.profilePicture }}
+            style={styles.commentAvatar}
+          />
+        )}
         <View style={styles.commentContent}>
-          <Text style={styles.commentUsername}>Siber Koza</Text>
-          <Text style={styles.commentText}>{comment}</Text>
+          {comment.author && comment.author.username && (
+            <Text style={styles.commentUsername}>{comment.author.username}</Text>
+          )}
+          {comment.content && (
+            <Text style={styles.commentText}>{comment.content}</Text>
+          )}
         </View>
       </View>
 
@@ -33,16 +88,27 @@ const ReplyScreen = ({ route, navigation }) => {
         style={styles.replyInput}
         placeholder="Type your Reply"
         placeholderTextColor="#aaa"
+        value={reply}
+        onChangeText={(text) => setReply(text)}
+        multiline
       />
 
-      <View style={{ flex: 1, justifyContent: 'flex-end',marginBottom:20 }} >
+      <View style={{ flex: 1, justifyContent: 'flex-end', marginBottom: 20 }}>
 
         {/* Action Icons */}
         <View style={styles.actionsContainer}>
-          <List color="#fff" size={24} />
-          <Link color="#fff" size={24} />
-          <ImageIcon color="#fff" size={24} />
-          <Video color="#fff" size={24} />
+          <TouchableOpacity onPress={handleAddList}>
+            <List color="#fff" size={24} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleAddLink}>
+            <Link color="#fff" size={24} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleAddImage}>
+            <ImageIcon color="#fff" size={24} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleAddVideo}>
+            <Video color="#fff" size={24} />
+          </TouchableOpacity>
         </View>
 
         {/* Post Button */}
@@ -50,6 +116,28 @@ const ReplyScreen = ({ route, navigation }) => {
           <Text style={styles.postButtonText}>Post</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Modal for Input */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+        style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
+      >
+        <View style={styles.modalView}>
+          <TextInput
+            style={styles.modalInput}
+            placeholder={inputType === 'list' ? "Enter a list item" : "Enter the URL"}
+            placeholderTextColor="#aaa"
+            value={inputValue}
+            onChangeText={text => setInputValue(text)}
+          />
+          <TouchableOpacity style={styles.modalButton} onPress={handleModalSubmit}>
+            <Text style={styles.modalButtonText}>Add</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -57,7 +145,7 @@ const ReplyScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', // Match the dark theme
+    backgroundColor: '#000',
     padding: 15,
   },
   header: {
@@ -99,22 +187,21 @@ const styles = StyleSheet.create({
     color: '#ccc',
   },
   replyInput: {
-    backgroundColor: '#111',
     color: '#fff',
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
-    borderTopColor:'#494949',
-    borderTopWidth:1
+    borderTopColor: '#494949',
+    borderTopWidth: 1,
   },
   actionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 20,
-    backgroundColor:'#222222',
-    paddingVertical:13,
-    borderRadius:10,
-    marginHorizontal:30
+    backgroundColor: '#222222',
+    paddingVertical: 13,
+    borderRadius: 10,
+    marginHorizontal: 30
   },
   postButton: {
     backgroundColor: '#F51F46',
@@ -126,6 +213,41 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: '#2c2c2c',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalInput: {
+    height: 40,
+    borderColor: '#333',
+    borderWidth: 1,
+    marginBottom: 20,
+    color: '#fff',
+    paddingHorizontal: 10,
+    width: '80%',
+  },
+  modalButton: {
+    backgroundColor: '#F51F46',
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
