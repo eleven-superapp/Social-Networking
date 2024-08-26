@@ -60,7 +60,7 @@ const MessageNavigator = () => {
 
 const MessageNavigation = () => {
     return (
-        <View style={{ flex: 1, backgroundColor: 'black' }}>
+        <View style={{ flex: 1, backgroundColor: 'black'}}>
             <Header />
             <View style={styles.searchBar}>
                 <TextInput style={styles.input} placeholder="Search contacts" placeholderTextColor="#888" />

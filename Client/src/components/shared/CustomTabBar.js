@@ -48,11 +48,15 @@ const CustomTabBar = (props) => {
     if (route.name === 'Leaderboard') {
       IconComponent = Trophy;
       label = 'Leaderboard';
-      additionalStyles = { left: '-3%',top: '-6%' };
+      additionalStyles = { left: '3%',top: '-6%' };
     } else if (route.name === 'Updates') {
       IconComponent = Bell;
       label = 'Updates';
-      additionalStyles = { top: '-25%', right: '13%' };
+      additionalStyles = { top: '-20%', right: '25%' };
+    } else if (route.name === 'Chats') {
+      IconComponent = MessageCircle;
+      label = 'Chats';
+      additionalStyles = { top: '-20%', left: '30%' };
     } else if (route.name === 'Chats') {
       IconComponent = MessageCircle;
       label = 'Chats';
@@ -60,11 +64,11 @@ const CustomTabBar = (props) => {
     } else if (route.name === 'Profile') {
       IconComponent = User;
       label = 'Profile';
-      additionalStyles = { right: '-3%',top: '-6%' };
+      additionalStyles = { right: '3%',top: '-6%' };
     }
 
     if (!IconComponent) {
-      console.error(`IconComponent for ${route.name} is undefined`);
+      // console.error(`IconComponent for ${route.name} is undefined`);
       return null;
     }
 
@@ -81,7 +85,7 @@ const CustomTabBar = (props) => {
     );
   };
 
-  const currentRoute = props.state.routeNames[props.state.index];
+  // const currentRoute = props.state.routeNames[props.state.index];
 
   return (
     <View style={styles.tabBarContainer}>
@@ -101,11 +105,9 @@ const CustomTabBar = (props) => {
 
         {/* Center button */}
         <TouchableOpacity onPress={handleCenterPress} style={styles.centerButton}>
-          {currentRoute === 'Home Screen' ? (
+          
             <Plus color={'white'} size={45} />
-          ) : (
-            <Home color={'white'} size={40} />
-          )}
+  
         </TouchableOpacity>
 
         {/* Render right side icons */}
@@ -147,8 +149,8 @@ const styles = StyleSheet.create({
   },
   leftIcons: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    flex: 0.5,
+    justifyContent: 'space-between',
+    flex: 1,
   },
   rightIcons: {
     flexDirection: 'row',
