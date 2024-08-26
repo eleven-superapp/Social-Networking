@@ -1,15 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
-import HomeScreen from '../../screens/mainScreens/HomeScreen';
-import LeaderboardScreen from '../../screens/Leaderbord';
-import ChatsScreen from '../../screens/Chats';
-import ProfileScreen from '../../screens/Profile';
-import UpdatesScreen from '../../screens/Updates';
 import CustomTabBar from './CustomTabBar';
 import MessageNavigation from '../../navigations/MessageNavigator';
-import Updates from '../../screens/updates/Updates';
 import Profile from '../../screens/profile/Profile';
+import Updates from '../../screens/updates/Updates';
 import LeaderBoard from '../../screens/leaderboard/LeaderBoard';
 import MainScreensNavigator from '../../navigations/MainScreensNavigator';
 
@@ -33,10 +28,10 @@ const CustomBottomNavBar = () => {
           headerShown: false,
         })}
       >
-        <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
-        <Tab.Screen name="Updates" component={UpdatesScreen} />
+        <Tab.Screen name="Leaderboard" component={LeaderBoard} />
+        <Tab.Screen name="Updates" component={Updates} />
         <Tab.Screen name="Chats" component={MessageNavigation} />
-        <Tab.Screen name="Profile" component={ProfileScreen} />
+        <Tab.Screen name="Profile" component={Profile} />
         <Tab.Screen name="Home" component={MainScreensNavigator} />
       </Tab.Navigator>
      
