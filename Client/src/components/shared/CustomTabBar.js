@@ -10,7 +10,7 @@ const CustomTabBar = (props) => {
   const handleCenterPress = () => {
     const currentRoute = props.state.routeNames[props.state.index];
     if (currentRoute !== 'Home') { 
-      props.navigation.navigate('Home');
+      props.navigation.navigate('Home Screen');
     } else {
       navigation.navigate('ExpenseScreen');
     }
@@ -52,11 +52,11 @@ const CustomTabBar = (props) => {
     } else if (route.name === 'Updates') {
       IconComponent = Bell;
       label = 'Updates';
-      additionalStyles = { top: '-13%', right: '2%' };
+      additionalStyles = { top: '-25%', right: '13%' };
     } else if (route.name === 'Chats') {
       IconComponent = MessageCircle;
       label = 'Chats';
-      additionalStyles = { top: '-13%', left: '2%' };
+      additionalStyles = { top: '-25%', left: '13%' };
     } else if (route.name === 'Profile') {
       IconComponent = User;
       label = 'Profile';
@@ -148,12 +148,12 @@ const styles = StyleSheet.create({
   leftIcons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    flex: 1,
+    flex: 0.5,
   },
   rightIcons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    flex: 1,
+    flex: 0.5,
   },
   iconTouchable: {
     alignItems: 'center',
@@ -162,10 +162,8 @@ const styles = StyleSheet.create({
   },
   centerButton: {
     position: 'absolute',
-    bottom: 30,
-    // left: '50%',
-    // right:'50%',
-    // marginLeft: -35,
+    bottom: '30%',
+    left: '42%',
     width: 70,
     height: 70,
     borderRadius: 35,
