@@ -117,7 +117,7 @@ async function getAllPosts(req, res) {
             .populate([
                 {
                     path: 'comments',
-                    select: 'author content replies',
+                    select: 'author content replies upvotes downvotes createdAt',
                     options: { limit: parseInt(commentsLimit, 10) },
                     populate: [
                         {
@@ -126,7 +126,7 @@ async function getAllPosts(req, res) {
                         },
                         {
                             path: 'replies',
-                            select: 'content author replies',
+                            select: 'author content replies upvotes downvotes createdAt',
                             options: { limit: parseInt(repliesLimit, 10) },
                             populate: [
                                 {
@@ -135,7 +135,7 @@ async function getAllPosts(req, res) {
                                 },
                                 {
                                     path: 'replies',
-                                    select: 'content author',
+                                    select: 'author content replies upvotes downvotes createdAt',
                                     populate: {
                                         path: 'author',
                                         select: 'username profilePicture' // Include profilePicture here

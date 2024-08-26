@@ -1,51 +1,114 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
-import { ArrowUp, MessageCircle, Send, ArrowDown } from 'lucide-react-native'; // Import icons from Lucide
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
+import { ArrowUp, MessageCircle, Send, ArrowDown } from 'lucide-react-native';
 import Header from '../../components/shared/Header';
 import ThreeDots from '../../components/shared/ThreeDots';
 import VerticalDots from '../../components/shared/VerticalDots';
+import Carousel from 'react-native-reanimated-carousel';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserContext } from '../../../context/userContextAPI';
+import { IP } from '../../../constants/constants';
 
 const CommentScreen = ({ route, navigation }) => {
-  // console.warn('Route: ',route);
-  
-  const post = route.params.post; // Extract the post object from the route parameters
+  const post = route.params.post;
   const selectedButton = route.params.selectedButton;
-  const imgUrl = "https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=mLvOM1FDQUQ9w6X-ZQNfuBhWPHSAL3aXLlC07R81IuXSXwbZxPT4mIz4g4UI3fxspyyn35oAmkAq~a2IHfWDDfrBQou~lhSwLXWzrgHbEIXsm-Ycw0oDw69I8YvfKPIQTokUORFcUvSS8AZP6HXvhD3VGXidSHBg69iqIIWKWu1HZkNILEcTDxT5FOeSKw7Jb50JS6Gcd95fcCNRvPYsdE4Pt086H5JAFqpaUGPDQBsaF2-J6MdnPrzJJruHhABCEQtZfGBIev3TMO-O18E4Jf8p8CJfHDRfMmBURsmsleTiM26CmJRS2d4YRcIR0XuLY1vCKG2KHBqUPpjIYvRgmw__";
 
-  const commentsData = [
-    {
-      id: 1,
-      user: 'Siber Koza',
-      comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      userProfileUrl: imgUrl,
-      time: '15 hours ago',
-      likes: '56.9k',
-    },
-    {
-      id: 2,
-      user: 'Eleven',
-      comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      userProfileUrl: imgUrl,
-      time: '12 hours ago',
-      likes: '46.9k',
-    },
-    {
-      id: 3,
-      user: 'Alpha',
-      comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      userProfileUrl: imgUrl,
-      time: '10 hours ago',
-      likes: '76.9k',
-    },
-    {
-      id: 4,
-      user: 'NASTP',
-      comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      userProfileUrl: imgUrl,
-      time: '18 hours ago',
-      likes: '126.9k',
+  const width = Dimensions.get('window').width;
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [addComment, setAddComment] = useState('');
+  const [commentLoading, setCommentLoading] = useState(false);
+  const { user } = useContext(UserContext);
+
+  const [comments, setComments] = useState(post.comments);
+
+  useEffect(() => {
+    console.log("Comments or post updated:", comments, post);
+  }, [comments, post]);
+
+  const fetchPostData = async () => {
+    try {
+      const response = await axios.get(`http://${IP}:5000/api/social/v1/posts/${post._id}`);
+      setComments(response.data.post.comments);
+    } catch (error) {
+      console.log("Error fetching updated post data:", error);
     }
-  ];
+  };
+
+  const handleAddPress = async () => {
+    setCommentLoading(true);
+    try {
+      const token = await AsyncStorage.getItem('jwt');
+      if (!token) {
+        throw new Error('No token found');
+      }
+      
+      const requestData = {
+        content: addComment,
+        author: user._id, 
+        postId: post._id, 
+        forumId: post.forum._id,
+      };
+
+      const response = await axios.post(`http://${IP}:5000/api/social/v1/comment/`, requestData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setComments(response.data.post.comments);
+      setCommentLoading(false);
+      setAddComment('');
+
+      // Optionally, fetch updated post data to ensure sync
+      await fetchPostData();
+    } catch (error) {
+      console.log("Error while posting comment:", error);
+      setCommentLoading(false);
+    } finally {
+      setCommentLoading(false);
+      setAddComment('');
+    }
+  }
+
+  const LazyLoadImage = ({ uri, style }) => {
+    const [loading, setLoading] = useState(true);
+  
+    return (
+      <View style={[style, styles.imageContainer]}>
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color="#ffffff" />
+          </View>
+        )}
+        <Image
+          source={{ uri }}
+          style={[style, loading && styles.hiddenImage]}
+          onError={(e) => console.log('Image load error:', e.nativeEvent.error)}
+          onLoad={() => {
+            setLoading(false);
+          }}
+        />
+      </View>
+    );
+  };
+
+  const DotIndicator = ({ total, currentIndex }) => {
+    return (
+      <View style={styles.dotsContainer}>
+        {Array.from({ length: total }).map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.dot,
+              currentIndex === index ? styles.activeDot : styles.inactiveDot,
+            ]}
+          />
+        ))}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -56,112 +119,124 @@ const CommentScreen = ({ route, navigation }) => {
         <View style={styles.postContainer}>
           <View style={styles.postHeader}>
             <Image
-              source={{ uri: post.profilePictureUrl }}
+              source={{ uri: post.author.profilePicture }}
               style={styles.avatar}
             />
             <View style={styles.postInfo}>
-              <Text style={styles.username}>{post.user}</Text>
-              <Text style={styles.time}>{post.time}</Text>
+              <Text style={styles.username}>{post.author.username}</Text>
+              <Text style={styles.time}>{new Date(post.createdAt).toLocaleString()}</Text>
             </View>
             <View style={styles.tag}>
-              <Text style={styles.tagText}>{post.category}</Text>
+              <Text style={styles.tagText}>{post.forum.title}</Text>
             </View>
             <ThreeDots />
           </View>
 
           <Text style={styles.postText}>
-            {post.text}
+            {post.content}
           </Text>
 
-          <Image
-            source={{ uri: post.imageUrl }}
-            style={styles.postImage}
-          />
+          {post.media.length > 1 ? (
+            <View style={{ position: 'relative' }}>
+              <Carousel
+                loop={false}
+                width={width}
+                height={300}
+                autoPlay={false}
+                data={post.media}
+                scrollAnimationDuration={1000}
+                onSnapToItem={(index) => setCurrentIndex(index)}
+                renderItem={({ item }) => (
+                  <LazyLoadImage uri={item} style={styles.postImage} />
+                )}
+              />
+              <DotIndicator total={post.media.length} currentIndex={currentIndex} />
+            </View>
+          ) : (
+            <LazyLoadImage uri={post.media[0]} style={styles.postImage} />
+          )}
 
           <View style={styles.postActions}>
-            <TouchableOpacity style={styles.actionButton}>
-              <ArrowDown
-                size={20}
-                color={selectedButton == "DisLike" ? '#F51F46' : '#C3BABA'}
-              />
-              <ArrowUp
-                color={selectedButton == "Like" ? '#F51F46' : '#C3BABA'}
-                size={20}
-              />
-              <Text style={styles.actionText}>{post.likes}</Text>
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', gap: '10%' }}>
+              <TouchableOpacity style={styles.actionButton}>
+                <ArrowDown
+                  size={20}
+                  color={selectedButton === "DisLike" ? '#F51F46' : '#C3BABA'} />
+                <Text style={styles.actionText}>{post.downvotes.length}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButton}>
+                <ArrowUp color={selectedButton === "Like" ? '#F51F46' : '#C3BABA'} size={20} />
+                <Text style={styles.actionText}>{post.upvotes.length}</Text>
+              </TouchableOpacity>
+            </View>
             <TouchableOpacity style={styles.actionButton}>
               <MessageCircle color="#F51F46" size={20} />
-              <Text style={[styles.actionText, { color: '#F51F46' }]}>{post.comments}</Text>
+              <Text style={[styles.actionText, { color: '#F51F46' }]}>{comments.length}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <Image
-                source={require('../../../assets/images/Share.png')}
-                style={{ height: 20, width: 20 }}
-                resizeMode='contain'
-              />
-              <Text style={styles.actionText}>{post.shares}</Text>
+              <Image source={require('../../../assets/images/Share.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
+              <Text style={styles.actionText}>{post.shares.length}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.commentSection}>
-          {commentsData.map((comment) => (
-            <View key={comment.id} style={styles.commentContainer}>
+          {comments.map((comment, index) => (
+            <View key={index} style={styles.commentContainer}>
               <View style={styles.commentLeftLine} />
               <Image
-                source={{ uri: comment.userProfileUrl }}
+                source={{ uri: comment.author.profilePicture }}
                 style={styles.avatarSmall}
               />
               <View style={styles.commentContent}>
                 <View style={styles.commentHeader}>
-                  <Text style={styles.commentUsername}>{comment.user}</Text>
-                  <Text style={styles.commentTime}>{comment.time}</Text>
+                  <Text style={styles.commentUsername}>{comment.author.username}</Text>
+                  <Text style={styles.commentTime}>{new Date(comment.createdAt).toLocaleString()}</Text>
                 </View>
                 <Text style={styles.commentText}>
-                  {comment.comment}
+                  {comment.content}
                 </Text>
 
                 <View style={styles.commentActions}>
                   <TouchableOpacity style={styles.commentActionButton}>
                     <ArrowUp color="#F51F46" size={20} />
-                    <Text style={styles.commentActionText}>{comment.likes}</Text>
+                    <Text style={styles.commentActionText}>{comment.upvotes.length}</Text>
+                    <ArrowDown color="white" size={20} />
+                    <Text style={styles.commentActionText}>{comment.downvotes.length}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("Reply Screen", { data: comment })}
-                    style={styles.commentActionButton}>
-                    <Image
-                      source={require('../../../assets/images/Reply.png')}
-                      style={{ height: 20, width: 20 }}
-                      resizeMode='contain'
-                    />
-                    <Text style={styles.commentReplyText}>Reply</Text>
+                  <TouchableOpacity 
+                    onPress={() => navigation.navigate("Reply Screen", { comment })}
+                    style={styles.commentActionButton}
+                  >
+                    <Image source={require('../../../assets/images/Reply.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
+                    <Text style={styles.commentReplyText}>Reply</Text> 
                   </TouchableOpacity>
                   <VerticalDots />
                 </View>
 
                 {/* Replies Section */}
                 <View style={{ marginTop: 10 }}>
-                  {Array(3).fill(0).map((_, replyIndex) => (
+                  {comment.replies && comment.replies.map((reply, replyIndex) => (
                     <View key={replyIndex} style={styles.replyContainer}>
                       <View style={styles.replyLeftLine} />
                       <Image
-                        source={{ uri: comment.userProfileUrl }}
+                        source={{ uri: reply.author.profilePicture }}
                         style={styles.avatarSmall}
                       />
                       <View style={styles.replyContent}>
                         <View style={styles.commentHeader}>
-                          <Text style={styles.commentUsername}>{comment.user}</Text>
-                          <Text style={styles.commentTime}>{comment.time}</Text>
+                          <Text style={styles.commentUsername}>{reply.author.username}</Text>
+                          <Text style={styles.commentTime}>{new Date(reply.createdAt).toLocaleString()}</Text>
                         </View>
                         <Text style={styles.commentText}>
-                          Reply to the comment here.
+                          {reply.content}
                         </Text>
                         <View style={styles.commentActions}>
                           <TouchableOpacity style={styles.commentActionButton}>
                             <ArrowUp color="#F51F46" size={20} />
-                            <Text style={styles.commentActionText}>10k</Text>
+                            <Text style={styles.commentActionText}>{reply.upvotes.length}</Text>
                             <ArrowDown color="white" size={20} />
+                            <Text style={styles.commentActionText}>{reply.downvotes.length}</Text>
                           </TouchableOpacity>
                           <TouchableOpacity style={styles.commentActionButton}>
                             <Image
@@ -188,10 +263,18 @@ const CommentScreen = ({ route, navigation }) => {
           style={styles.commentInput}
           placeholder="Type your comment"
           placeholderTextColor="#aaa"
+          value={addComment}
+          onChangeText={(text) => setAddComment(text)}
         />
-        <TouchableOpacity style={styles.sendButton}>
-          <Send color="#F51F46" size={24} />
-        </TouchableOpacity>
+        {commentLoading ? (
+          <View style={[styles.loadingContainer, { marginLeft: '5%'}]}>
+            <ActivityIndicator size="small" color="#F51F46" />
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.sendButton} onPress={handleAddPress}>
+            <Send color="#F51F46" size={24} /> 
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -249,7 +332,7 @@ const styles = StyleSheet.create({
   },
   postImage: {
     width: '100%',
-    height: 200,
+    height: 300,
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -273,7 +356,7 @@ const styles = StyleSheet.create({
   commentContainer: {
     flexDirection: 'row',
     marginBottom: 15,
-    paddingLeft: 15,
+    paddingLeft: '5%',
   },
   commentLeftLine: {
     position: 'absolute',
@@ -285,12 +368,12 @@ const styles = StyleSheet.create({
   },
   commentContent: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: '2%',
   },
   commentHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5,
+    marginBottom: '2%',
   },
   commentUsername: {
     color: '#fff',
@@ -320,19 +403,19 @@ const styles = StyleSheet.create({
   },
   commentReplyText: {
     color: '#C3BABA',
-    marginLeft: 5,
+    marginLeft: '1%',
   },
   replyContainer: {
     flexDirection: 'row',
     marginBottom: 10,
-    marginLeft: 30, // Margin from the left to indent replies
+    marginLeft: '5%', // Margin from the left to indent replies
     marginRight: 10, // Margin from the right
-    paddingLeft: 15,
+    paddingLeft: '1%',
     position: 'relative',
   },
   replyLeftLine: {
     position: 'absolute',
-    left: -15,
+    left: '-5%',
     top: 0,
     bottom: 0,
     width: 2,
@@ -367,6 +450,25 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: '5%',
+    marginTop: '2%'
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: '#ffffff', // Active dot color
+  },
+  inactiveDot: {
+    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Inactive dot color
   },
 });
 
