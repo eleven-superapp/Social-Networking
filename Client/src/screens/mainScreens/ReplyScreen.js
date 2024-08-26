@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity } from 'reac
 import { ArrowLeft, List, Link, Image as ImageIcon, Video } from 'lucide-react-native'; // Use icons from lucide-react-native
 
 const ReplyScreen = ({ route, navigation }) => {
-  const comment = route.params.comment; // Assuming the comment is passed via navigation params
+  const data = route.params.data; // Assuming the comment is passed via navigation params
 
   return (
     <View style={styles.container}>
@@ -13,18 +13,18 @@ const ReplyScreen = ({ route, navigation }) => {
           <ArrowLeft color="#fff" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Reply</Text>
-        <Image source={{ uri: comment.userProfilePic }} style={styles.userAvatar} />
+        <Image source={{ uri: data.userProfileUrl }} style={styles.userAvatar} />
       </View>
 
       {/* Comment Section */}
       <View style={styles.commentSection}>
         <Image
-          source={{ uri: comment.userProfilePic }}
+          source={{ uri: data.userProfileUrl }}
           style={styles.commentAvatar}
         />
         <View style={styles.commentContent}>
-          <Text style={styles.commentUsername}>Siber Koza</Text>
-          <Text style={styles.commentText}>{comment}</Text>
+          <Text style={styles.commentUsername}>{data.user}</Text>
+          <Text style={styles.commentText}>{data.comment}</Text>
         </View>
       </View>
 

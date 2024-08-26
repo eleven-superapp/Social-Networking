@@ -9,8 +9,8 @@ const CustomTabBar = (props) => {
 
   const handleCenterPress = () => {
     const currentRoute = props.state.routeNames[props.state.index];
-    if (currentRoute !== 'Home Screen') {
-      props.navigation.navigate('Home Screen');
+    if (currentRoute !== 'Home') { 
+      props.navigation.navigate('Home');
     } else {
       navigation.navigate('ExpenseScreen');
     }
@@ -39,6 +39,7 @@ const CustomTabBar = (props) => {
             });
 
             if (!isFocused && !event.defaultPrevented) {
+              console.warn(route.name);
               props.navigation.navigate(route.name);
             }
           };
@@ -69,7 +70,7 @@ const CustomTabBar = (props) => {
             label = "Profile";
           }
 
-          if (route.name !== 'Home Screen') {
+          if (route.name !== 'Home') {
             return (
               <TouchableOpacity
                 key={index}
@@ -129,8 +130,9 @@ const styles = StyleSheet.create({
   centerButton: {
     position: 'absolute',
     bottom: 30,
-    left: '50%',
-    marginLeft: -35,
+    // left: '50%',
+    // right:'50%',
+    // marginLeft: -35,
     width: 70,
     height: 70,
     borderRadius: 35,

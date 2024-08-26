@@ -5,16 +5,54 @@ import Header from '../../components/shared/Header';
 import ThreeDots from '../../components/shared/ThreeDots';
 import VerticalDots from '../../components/shared/VerticalDots';
 
-const CommentScreen = ({ route,navigation }) => {
+const CommentScreen = ({ route, navigation }) => {
+  // console.warn('Route: ',route);
+  
   const post = route.params.post; // Extract the post object from the route parameters
   const selectedButton = route.params.selectedButton;
-  const comment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+  const imgUrl = "https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725235200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=mLvOM1FDQUQ9w6X-ZQNfuBhWPHSAL3aXLlC07R81IuXSXwbZxPT4mIz4g4UI3fxspyyn35oAmkAq~a2IHfWDDfrBQou~lhSwLXWzrgHbEIXsm-Ycw0oDw69I8YvfKPIQTokUORFcUvSS8AZP6HXvhD3VGXidSHBg69iqIIWKWu1HZkNILEcTDxT5FOeSKw7Jb50JS6Gcd95fcCNRvPYsdE4Pt086H5JAFqpaUGPDQBsaF2-J6MdnPrzJJruHhABCEQtZfGBIev3TMO-O18E4Jf8p8CJfHDRfMmBURsmsleTiM26CmJRS2d4YRcIR0XuLY1vCKG2KHBqUPpjIYvRgmw__";
+
+  const commentsData = [
+    {
+      id: 1,
+      user: 'Siber Koza',
+      comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      userProfileUrl: imgUrl,
+      time: '15 hours ago',
+      likes: '56.9k',
+    },
+    {
+      id: 2,
+      user: 'Eleven',
+      comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      userProfileUrl: imgUrl,
+      time: '12 hours ago',
+      likes: '46.9k',
+    },
+    {
+      id: 3,
+      user: 'Alpha',
+      comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      userProfileUrl: imgUrl,
+      time: '10 hours ago',
+      likes: '76.9k',
+    },
+    {
+      id: 4,
+      user: 'NASTP',
+      comment: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      userProfileUrl: imgUrl,
+      time: '18 hours ago',
+      likes: '126.9k',
+    }
+  ];
+
   return (
     <View style={styles.container}>
       <Header />
-      
+
       <ScrollView style={styles.contentContainer}>
-        
+
         <View style={styles.postContainer}>
           <View style={styles.postHeader}>
             <Image
@@ -43,9 +81,13 @@ const CommentScreen = ({ route,navigation }) => {
           <View style={styles.postActions}>
             <TouchableOpacity style={styles.actionButton}>
               <ArrowDown
-              size={20}
-              color={ selectedButton=="DisLike"?'#F51F46':'#C3BABA'} />
-              <ArrowUp color={ selectedButton=="Like"?'#F51F46':'#C3BABA'} size={20} />
+                size={20}
+                color={selectedButton == "DisLike" ? '#F51F46' : '#C3BABA'}
+              />
+              <ArrowUp
+                color={selectedButton == "Like" ? '#F51F46' : '#C3BABA'}
+                size={20}
+              />
               <Text style={styles.actionText}>{post.likes}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
@@ -53,39 +95,47 @@ const CommentScreen = ({ route,navigation }) => {
               <Text style={[styles.actionText, { color: '#F51F46' }]}>{post.comments}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.actionButton}>
-              <Image source={require('../../../assets/images/Share.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
-              <Text style={styles.actionText}>{post.shares}</Text> 
+              <Image
+                source={require('../../../assets/images/Share.png')}
+                style={{ height: 20, width: 20 }}
+                resizeMode='contain'
+              />
+              <Text style={styles.actionText}>{post.shares}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.commentSection}>
-          {Array(3).fill(0).map((_, index) => (
-            <View key={index} style={styles.commentContainer}>
+          {commentsData.map((comment) => (
+            <View key={comment.id} style={styles.commentContainer}>
               <View style={styles.commentLeftLine} />
               <Image
-                source={{ uri: post.profilePictureUrl }}
+                source={{ uri: comment.userProfileUrl }}
                 style={styles.avatarSmall}
               />
               <View style={styles.commentContent}>
                 <View style={styles.commentHeader}>
-                  <Text style={styles.commentUsername}>{post.user}</Text>
-                  <Text style={styles.commentTime}>{post.time}</Text>
+                  <Text style={styles.commentUsername}>{comment.user}</Text>
+                  <Text style={styles.commentTime}>{comment.time}</Text>
                 </View>
                 <Text style={styles.commentText}>
-                  {comment}
+                  {comment.comment}
                 </Text>
-                
+
                 <View style={styles.commentActions}>
                   <TouchableOpacity style={styles.commentActionButton}>
                     <ArrowUp color="#F51F46" size={20} />
-                    <Text style={styles.commentActionText}>56.9k</Text> 
+                    <Text style={styles.commentActionText}>{comment.likes}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity 
-                  onPress={()=>navigation.navigate("Reply Screen",{comment:comment})}
-                  style={styles.commentActionButton}>
-                    <Image source={require('../../../assets/images/Reply.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
-                    <Text style={styles.commentReplyText}>Reply</Text> 
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Reply Screen", { data: comment })}
+                    style={styles.commentActionButton}>
+                    <Image
+                      source={require('../../../assets/images/Reply.png')}
+                      style={{ height: 20, width: 20 }}
+                      resizeMode='contain'
+                    />
+                    <Text style={styles.commentReplyText}>Reply</Text>
                   </TouchableOpacity>
                   <VerticalDots />
                 </View>
@@ -96,13 +146,13 @@ const CommentScreen = ({ route,navigation }) => {
                     <View key={replyIndex} style={styles.replyContainer}>
                       <View style={styles.replyLeftLine} />
                       <Image
-                        source={{ uri: post.profilePictureUrl }}
+                        source={{ uri: comment.userProfileUrl }}
                         style={styles.avatarSmall}
                       />
                       <View style={styles.replyContent}>
                         <View style={styles.commentHeader}>
-                          <Text style={styles.commentUsername}>{post.user}</Text>
-                          <Text style={styles.commentTime}>{post.time}</Text>
+                          <Text style={styles.commentUsername}>{comment.user}</Text>
+                          <Text style={styles.commentTime}>{comment.time}</Text>
                         </View>
                         <Text style={styles.commentText}>
                           Reply to the comment here.
@@ -114,7 +164,11 @@ const CommentScreen = ({ route,navigation }) => {
                             <ArrowDown color="white" size={20} />
                           </TouchableOpacity>
                           <TouchableOpacity style={styles.commentActionButton}>
-                            <Image source={require('../../../assets/images/Reply.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
+                            <Image
+                              source={require('../../../assets/images/Reply.png')}
+                              style={{ height: 20, width: 20 }}
+                              resizeMode='contain'
+                            />
                             <Text style={styles.commentReplyText}>Reply</Text>
                           </TouchableOpacity>
                           <VerticalDots />
@@ -136,7 +190,7 @@ const CommentScreen = ({ route,navigation }) => {
           placeholderTextColor="#aaa"
         />
         <TouchableOpacity style={styles.sendButton}>
-          <Send color="#F51F46" size={24} /> 
+          <Send color="#F51F46" size={24} />
         </TouchableOpacity>
       </View>
     </View>
@@ -144,6 +198,7 @@ const CommentScreen = ({ route,navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  // Styles remain unchanged
   container: {
     flex: 1,
     backgroundColor: '#000', // Background color to match the theme

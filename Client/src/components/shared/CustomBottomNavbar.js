@@ -1,9 +1,13 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
-import HomeScreen from '../../screens/mainScreens/HomeScreen';
+// import HomeScreen from '../../screens/mainScreens/HomeScreen';
 import CustomTabBar from './CustomTabBar';
-// import { Home } from 'lucide-react-native';
+import MessageNavigation from '../../navigations/MessageNavigator';
+import Updates from '../../screens/updates/Updates';
+import Profile from '../../screens/profile/Profile';
+import LeaderBoard from '../../screens/leaderboard/LeaderBoard';
+import MainScreensNavigator from '../../navigations/MainScreensNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -24,11 +28,11 @@ const CustomBottomNavBar = () => {
           headerShown: false,
         })}
       >
-        <Tab.Screen name="Home Screen" component={HomeScreen} />
-        <Tab.Screen name="Leaderboard" component={HomeScreen} />
-        <Tab.Screen name="Updates" component={HomeScreen} />
-        <Tab.Screen name="Chats" component={HomeScreen} />
-        <Tab.Screen name='Profile' component={HomeScreen} />
+        <Tab.Screen name="Home" component={MainScreensNavigator} />
+        <Tab.Screen name="Leaderboard" component={LeaderBoard} />
+        <Tab.Screen name="Updates" component={Updates} />
+        <Tab.Screen name="Chats" component={MessageNavigation} />
+        <Tab.Screen name='Profile' component={Profile} />
       </Tab.Navigator>
      
     
