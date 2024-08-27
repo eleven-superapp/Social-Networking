@@ -57,10 +57,6 @@ const CustomTabBar = (props) => {
       IconComponent = MessageCircle;
       label = 'Chats';
       additionalStyles = { top: '-20%', left: '30%' };
-    } else if (route.name === 'Chats') {
-      IconComponent = MessageCircle;
-      label = 'Chats';
-      additionalStyles = { top: '-25%', left: '13%' };
     } else if (route.name === 'Profile') {
       IconComponent = User;
       label = 'Profile';
@@ -162,8 +158,10 @@ const styles = StyleSheet.create({
   },
   centerButton: {
     position: 'absolute',
-    bottom: '30%',
-    left: '42%',
+    bottom: 30,
+    left: '50%',
+    // right:'50%',
+    marginLeft: -30,
     width: 70,
     height: 70,
     borderRadius: 35,

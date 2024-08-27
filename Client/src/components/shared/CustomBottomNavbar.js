@@ -20,7 +20,7 @@ const CustomBottomNavBar = () => {
 
     <>
       <Tab.Navigator
-        initialRouteName="Home Screen"
+        initialRouteName="Home"
         tabBar={(props) => <CustomTabBar {...props} />}
         screenOptions={({ route }) => ({
           tabBarActiveTintColor: '#6A7ADA',

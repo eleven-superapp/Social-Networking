@@ -24,7 +24,7 @@ const LoginScreen = () => {
   useEffect(() => {
     console.log("Username:", username);
     console.log("Password:", password);
-    console.log("IP address:", IP);
+    // console.log("IP address:", IP);
   }, [username, password]);
 
   const handleLogin = async () => {
