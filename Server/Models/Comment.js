@@ -34,6 +34,21 @@ const commentSchema = new mongoose.Schema({
         ref: 'User',
         default: []
     }],
+    media: [{
+        type: {
+            type: String,
+            required: true
+        },
+        url: {
+            type: String,
+            required: true
+        }
+    }],
+    parentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment',
+        default: null  // Default to null for top-level comments
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Comment', commentSchema);

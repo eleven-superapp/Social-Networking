@@ -10,7 +10,7 @@ const CustomTabBar = (props) => {
   const handleCenterPress = () => {
     const currentRoute = props.state.routeNames[props.state.index];
     if (currentRoute !== 'Home') { 
-      props.navigation.navigate('Home Screen');
+      props.navigation.navigate('Home');
     } else {
       navigation.navigate('ExpenseScreen');
     }
@@ -85,7 +85,7 @@ const CustomTabBar = (props) => {
     );
   };
 
-  // const currentRoute = props.state.routeNames[props.state.index];
+  const currentRoute = props.state.routeNames[props.state.index];
 
   return (
     <View style={styles.tabBarContainer}>
@@ -105,9 +105,7 @@ const CustomTabBar = (props) => {
 
         {/* Center button */}
         <TouchableOpacity onPress={handleCenterPress} style={styles.centerButton}>
-          
-            <Plus color={'white'} size={45} />
-  
+          { currentRoute === 'Home' ? <Plus color={'white'} size={45} /> : <Home color={'white'} size={45} /> }
         </TouchableOpacity>
 
         {/* Render right side icons */}
@@ -150,11 +148,11 @@ const styles = StyleSheet.create({
   leftIcons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    flex: 1,
+    flex: 0.5,
   },
   rightIcons: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     flex: 0.5,
   },
   iconTouchable: {

@@ -117,7 +117,7 @@ async function getAllPosts(req, res) {
             .populate([
                 {
                     path: 'comments',
-                    select: 'author content replies upvotes downvotes createdAt',
+                    select: 'author content replies upvotes downvotes createdAt forum media post',
                     options: { limit: parseInt(commentsLimit, 10) },
                     populate: [
                         {
@@ -126,7 +126,7 @@ async function getAllPosts(req, res) {
                         },
                         {
                             path: 'replies',
-                            select: 'author content replies upvotes downvotes createdAt',
+                            select: 'author content replies upvotes downvotes createdAt forum media post',
                             options: { limit: parseInt(repliesLimit, 10) },
                             populate: [
                                 {
