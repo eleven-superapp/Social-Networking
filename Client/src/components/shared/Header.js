@@ -3,16 +3,16 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Menu, User } from 'lucide-react-native'; // Import icons from Lucide
 import { UserContext } from '../../../context/userContextAPI';
 
-const Header = () => {
+const Header = ({heading}) => {
   const { user, setUser } = useContext(UserContext);
   // console.log("USer:", user);
   return (
-    <View style={styles.headerContainer}>
+    <View style={[styles.headerContainer,{borderBottomColor:heading?"#FFFFFF":"#858585",borderBottomWidth:1}]}>
       <View style={{flexDirection:'row',alignItems:'center'}} >
         <TouchableOpacity>
-          <Menu color="#858585" size={28} />
+          <Menu color={heading? "#FFFFFF":"#858585"} size={28} />
         </TouchableOpacity>
-        <Text style={styles.title}>Chatterbox</Text>
+        <Text style={[styles.title,{color:heading?"#FFFFFF":"#858585"}]}>{heading? heading: "Chatterbox"}</Text>
       </View>
       {/* <Image
         source={{ uri: `${user?.profilePicture}` }}
@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     backgroundColor: '#000',
-    borderBlockColor: '#4A4A4A4D',
-    borderBottomWidth: 2
+    // borderBlockColor: '#4A4A4A4D',
+    // borderBottomWidth: 2
   },
   title: {
     color: '#858585',

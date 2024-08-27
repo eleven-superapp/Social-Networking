@@ -10,7 +10,7 @@ const CustomTabBar = (props) => {
   const handleCenterPress = () => {
     const currentRoute = props.state.routeNames[props.state.index];
     if (currentRoute !== 'Home') { 
-      props.navigation.navigate('Home Screen');
+      props.navigation.navigate('Home');
     } else {
       navigation.navigate('ExpenseScreen');
     }
