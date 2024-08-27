@@ -4,7 +4,7 @@ const Post = require("../../Models/Post");
 async function comment(req, res) {
     try {
         console.log("Creating comment called.");
-        const { content, author, postId, forumId } = req.body;
+        const { content, author, postId, forumId, media } = req.body;
         console.log("Request data:", { content, author, postId, forumId });
         
         if (!content || !author || !postId || !forumId) {
@@ -26,7 +26,8 @@ async function comment(req, res) {
             post: postId,
             forum: forumId,
             upvotes: [],  // Initialize as empty array
-            downvotes: [] // Initialize as empty array
+            downvotes: [], // Initialize as empty array
+            media: media
         });
 
         const savedComment = await comment.save();
@@ -81,7 +82,7 @@ async function comment(req, res) {
         ])
 
         console.log("Populated post data:", populatedPost);
-        res.status(201).json({ post: populatedPost });
+        res.json({ post: populatedPost });
 
     } catch (e) {
         console.error("Caught exception:", e);
@@ -92,8 +93,8 @@ async function comment(req, res) {
 
 async function reply(req, res) {
     try {
-        const { content, author, postId, forumId, parentCommentId } = req.body;
-        if (!content || !author || !postId || !forumId || !parentCommentId) {
+        const { content, author, postId, forumId, parentCommentId, media } = req.body;
+        if (!content || !author || !postId || !forumId || !parentCommentId || !media) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
@@ -111,14 +112,65 @@ async function reply(req, res) {
             author: author,
             content: content,
             post: postId,
-            forum: forumId
+            forum: forumId,
+            upvotes: [],  // Initialize as empty array
+            downvotes: [], // Initialize as empty array
+            media: media,
+            parentId: parentCommentId
         });
 
         await newReply.save().then(async (reply) => {
             parentComment.replies.push(reply._id);
             await parentComment.save();
-            res.status(201).json({ reply });
         });
+
+        // Populate comments and author data before sending response
+        const populatedPost = await Post.findById(postId)
+        .populate([
+            {
+                path: 'comments',
+                select: 'author content replies upvotes downvotes createdAt',
+                populate: [
+                    {
+                        path: 'author',
+                        select: 'username profilePicture' // Include profilePicture here
+                    },
+                    {
+                        path: 'replies',
+                        select: 'author content replies upvotes downvotes createdAt',
+                        populate: [
+                            {
+                                path: 'author',
+                                select: 'username profilePicture' // Include profilePicture here
+                            },
+                            {
+                                path: 'replies',
+                                select: 'author content replies upvotes downvotes createdAt',
+                                populate: {
+                                    path: 'author',
+                                    select: 'username profilePicture' // Include profilePicture here
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                path: 'upvotes downvotes',
+                select: 'username profilePicture' // Include profilePicture here
+            },
+            {
+                path: 'forum',
+                select: 'title'
+            },
+            {
+                path: 'author',
+                select: 'username profilePicture' // Include profilePicture here
+            }
+        ])
+
+        console.log("Populated post data:", populatedPost);
+        res.status(201).json({ post: populatedPost });
 
     } catch (e) {
         res.status(500).json({ message: e.message });
