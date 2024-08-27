@@ -9,6 +9,8 @@ import CustomBottomNavBar from '../components/shared/CustomBottomNavbar';
 import OnBoarding from '../screens/onBoardingScreens/onBoarding';
 import OnBoardingProfile from '../screens/onBoardingScreens/onBoardingProfile';
 import LoginScreen from '../screens/AuthScreens/loginScreen';
+import ReplyScreen from '../screens/mainScreens/ReplyScreen';
+import CommentScreen from '../screens/mainScreens/CommentScreen';
 
 const Stack = createStackNavigator();
 
@@ -42,6 +44,14 @@ const AppNavigator = () => {
             component={LoginScreen}
             options={{ headerShown: false }}
           />
+
+          <Stack.Screen name='Reply' component={ReplyScreen} options={{
+                headerShown:false
+            }} />
+
+          <Stack.Screen name='Comment' component={CommentScreen} options={{
+                headerShown:false
+          }}/>
         
         </Stack.Navigator>
       </NavigationContainer>

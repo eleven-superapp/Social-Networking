@@ -9,9 +9,121 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserContext } from '../../../context/userContextAPI';
 import { IP } from '../../../constants/constants';
+import RenderHtml from 'react-native-render-html';
+import Video from 'react-native-video'; // Import Video component
+
+const Reply = ({ reply, navigation, setComments, width, loadingStates, handleLoadStart, handleLoadEnd }) => {
+  return (
+    <View key={reply._id} style={styles.replyChildContainer}>
+      <View style={styles.replyLeftLine} />
+      <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', paddingRight: '10%', width: '100%', gap: '10%'}}>
+        <Image
+          source={{ uri: reply.author.profilePicture }}
+          style={styles.avatarSmall}
+        />
+        <View style={styles.commentHeader}>
+            <Text style={styles.commentUsername}>{reply.author.username}</Text>
+            <Text style={styles.commentTime}>{new Date(reply.createdAt).toLocaleString()}</Text>
+        </View>
+      </View>
+      <View style={styles.replyContent}>
+
+        {/* Media Preview for Replies */}
+        {reply.media?.length > 0 && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaPreviewContainer}>
+            {reply.media.map((item, index) => (
+              <View key={index} style={styles.mediaItem}>
+                {loadingStates[index] && (
+                  <View style={styles.placeholder}>
+                    <ActivityIndicator size="large" color="#F51F46" />
+                  </View>
+                )}
+                {item.type.includes('image') && (
+                  <Image
+                    source={{ uri: item.url }}
+                    style={styles.mediaImage}
+                    onLoadStart={() => handleLoadStart(index)}
+                    onLoadEnd={() => handleLoadEnd(index)}
+                  />
+                )}
+                {item.type.includes('video') && (
+                  <Video
+                    source={{ uri: item.url }}
+                    style={styles.mediaVideo}
+                    useNativeControls={true}
+                    resizeMode="cover"
+                    paused={false}
+                    onLoadStart={() => handleLoadStart(index)}
+                    onLoad={() => handleLoadEnd(index)}
+                    repeat={true}
+                  />
+                )}
+              </View>
+            ))}
+          </ScrollView>
+        )}
+
+        {/* Render HTML Content for Replies */}
+        <RenderHtml
+          contentWidth={width}
+          source={{ html: reply.content }}
+          tagsStyles={{
+            p: { color: '#fff', fontSize: 14, marginBottom: 10 },
+            a: { color: '#F51F46', fontSize: 14, marginBottom: 10 },
+            div: { color: '#fff', fontSize: 14, marginBottom: 10 }
+          }}
+          ignoredTags={['script']}
+          enableExperimentalBRCollapsing
+        />
+
+        {/* Action Buttons for Replies */}
+        <View style={styles.commentActions}>
+          <TouchableOpacity style={styles.commentActionButton}>
+            <ArrowUp color="#F51F46" size={20} />
+            <Text style={styles.commentActionText}>{reply.upvotes.length}</Text>
+            <ArrowDown color="white" size={20} />
+            <Text style={styles.commentActionText}>{reply.downvotes.length}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.commentActionButton}
+            onPress={() => navigation.navigate("Reply", { comment: reply, setComments })}
+          >
+            <Image
+              source={require('../../../assets/images/Reply.png')}
+              style={{ height: 20, width: 20 }}
+              resizeMode='contain'
+            />
+            <Text style={styles.commentReplyText}>Reply</Text>
+          </TouchableOpacity>
+          <VerticalDots />
+        </View>
+
+        {/* Recursive Rendering of Nested Replies */}
+        {reply.replies && reply.replies.length > 0 && (
+          <View style={{ marginLeft: 20 }}>
+            {reply.replies.map((nestedReply) => (
+              <Reply
+                key={nestedReply._id}
+                reply={nestedReply}
+                navigation={navigation}
+                setComments={setComments}
+                width={width}
+                loadingStates={loadingStates}
+                handleLoadStart={handleLoadStart}
+                handleLoadEnd={handleLoadEnd}
+              />
+            ))}
+          </View>
+        )}
+      </View>
+    </View>
+  );
+};
+
 
 const CommentScreen = ({ route, navigation }) => {
   const post = route.params.post;
+  const FORUM_ID = post.forum._id;
   const selectedButton = route.params.selectedButton;
 
   const width = Dimensions.get('window').width;
@@ -20,7 +132,7 @@ const CommentScreen = ({ route, navigation }) => {
   const [addComment, setAddComment] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
   const { user } = useContext(UserContext);
-
+  const [loadingStates, setLoadingStates] = useState([]);
   const [comments, setComments] = useState(post.comments);
 
   useEffect(() => {
@@ -43,11 +155,11 @@ const CommentScreen = ({ route, navigation }) => {
       if (!token) {
         throw new Error('No token found');
       }
-      
+
       const requestData = {
         content: addComment,
-        author: user._id, 
-        postId: post._id, 
+        author: user._id,
+        postId: post._id,
         forumId: post.forum._id,
       };
 
@@ -70,11 +182,27 @@ const CommentScreen = ({ route, navigation }) => {
       setCommentLoading(false);
       setAddComment('');
     }
-  }
+  };
+
+  const handleLoadStart = (index) => {
+    setLoadingStates(prevStates => {
+      const newStates = [...prevStates];
+      newStates[index] = true;
+      return newStates;
+    });
+  };
+
+  const handleLoadEnd = (index) => {
+    setLoadingStates(prevStates => {
+      const newStates = [...prevStates];
+      newStates[index] = false;
+      return newStates;
+    });
+  };
 
   const LazyLoadImage = ({ uri, style }) => {
     const [loading, setLoading] = useState(true);
-  
+
     return (
       <View style={[style, styles.imageContainer]}>
         {loading && (
@@ -204,54 +332,33 @@ const CommentScreen = ({ route, navigation }) => {
                     <ArrowDown color="white" size={20} />
                     <Text style={styles.commentActionText}>{comment.downvotes.length}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity 
-                    onPress={() => navigation.navigate("Reply Screen", { comment })}
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Reply", { comment, setComments })}
                     style={styles.commentActionButton}
                   >
                     <Image source={require('../../../assets/images/Reply.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
-                    <Text style={styles.commentReplyText}>Reply</Text> 
+                    <Text style={styles.commentReplyText}>Reply</Text>
                   </TouchableOpacity>
                   <VerticalDots />
                 </View>
 
-                {/* Replies Section */}
-                <View style={{ marginTop: 10 }}>
-                  {comment.replies && comment.replies.map((reply, replyIndex) => (
-                    <View key={replyIndex} style={styles.replyContainer}>
-                      <View style={styles.replyLeftLine} />
-                      <Image
-                        source={{ uri: reply.author.profilePicture }}
-                        style={styles.avatarSmall}
+                {/* Use the Reply Component to Render Replies */}
+                {comment.replies && comment.replies.length > 0 && (
+                  <View style={{ marginLeft: 20 }}>
+                    {comment.replies.map((reply) => (
+                      <Reply
+                        key={reply._id}
+                        reply={reply}
+                        navigation={navigation}
+                        setComments={setComments}
+                        width={width}
+                        loadingStates={loadingStates}
+                        handleLoadStart={handleLoadStart}
+                        handleLoadEnd={handleLoadEnd}
                       />
-                      <View style={styles.replyContent}>
-                        <View style={styles.commentHeader}>
-                          <Text style={styles.commentUsername}>{reply.author.username}</Text>
-                          <Text style={styles.commentTime}>{new Date(reply.createdAt).toLocaleString()}</Text>
-                        </View>
-                        <Text style={styles.commentText}>
-                          {reply.content}
-                        </Text>
-                        <View style={styles.commentActions}>
-                          <TouchableOpacity style={styles.commentActionButton}>
-                            <ArrowUp color="#F51F46" size={20} />
-                            <Text style={styles.commentActionText}>{reply.upvotes.length}</Text>
-                            <ArrowDown color="white" size={20} />
-                            <Text style={styles.commentActionText}>{reply.downvotes.length}</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity style={styles.commentActionButton}>
-                            <Image
-                              source={require('../../../assets/images/Reply.png')}
-                              style={{ height: 20, width: 20 }}
-                              resizeMode='contain'
-                            />
-                            <Text style={styles.commentReplyText}>Reply</Text>
-                          </TouchableOpacity>
-                          <VerticalDots />
-                        </View>
-                      </View>
-                    </View>
-                  ))}
-                </View>
+                    ))}
+                  </View>
+                )}
               </View>
             </View>
           ))}
@@ -267,12 +374,12 @@ const CommentScreen = ({ route, navigation }) => {
           onChangeText={(text) => setAddComment(text)}
         />
         {commentLoading ? (
-          <View style={[styles.loadingContainer, { marginLeft: '5%'}]}>
+          <View style={[styles.loadingContainer, { marginLeft: '5%' }]}>
             <ActivityIndicator size="small" color="#F51F46" />
           </View>
         ) : (
           <TouchableOpacity style={styles.sendButton} onPress={handleAddPress}>
-            <Send color="#F51F46" size={24} /> 
+            <Send color="#F51F46" size={24} />
           </TouchableOpacity>
         )}
       </View>
@@ -375,6 +482,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: '2%',
+    width: '100%'
   },
   commentUsername: {
     color: '#fff',
@@ -406,14 +514,16 @@ const styles = StyleSheet.create({
     color: '#C3BABA',
     marginLeft: '1%',
   },
-  replyContainer: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    marginLeft: '5%', // Margin from the left to indent replies
-    marginRight: 10, // Margin from the right
-    paddingLeft: '1%',
-    position: 'relative',
-  },
+  // replyChildContainer: {
+  //   flexDirection: 'row',
+  //   marginBottom: 10,
+  //   marginLeft: '1%', // Margin from the left to indent replies
+  //   marginRight: 10, // Margin from the right
+  //   paddingLeft: '1%',
+  //   position: 'relative',
+  //   justifyContent: 'center',
+  //   gap: '1%'
+  // },
   replyLeftLine: {
     position: 'absolute',
     left: '-5%',
@@ -471,6 +581,41 @@ const styles = StyleSheet.create({
   inactiveDot: {
     backgroundColor: 'rgba(255, 255, 255, 0.3)', // Inactive dot color
   },
+  mediaPreviewContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+    minHeight: '30%',
+    marginBottom: '5%'
+  },
+  mediaItem: {
+    marginRight: 10,
+    position: 'relative',
+  },
+  mediaImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 8,
+  },
+  mediaVideo: {
+    width: 200,
+    height: 200,
+    borderRadius: 8,
+  },
+  placeholder: {
+    position: 'absolute',
+    width: 200,  // Adjusted to match media size
+    height: 200, // Adjusted to match media size
+    backgroundColor: '#333', // Dark gray background color
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    zIndex: 1,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: '5%'
+  }
 });
 
 export default CommentScreen;
