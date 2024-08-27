@@ -14,8 +14,6 @@ const MainScreensNavigation = ()=>{
                 headerShown:false
             }}
             />
-            <Stack.Screen name='Comment' component={CommentScreen} />
-            <Stack.Screen name='Reply' component={ReplyScreen} />
         </Stack.Navigator>
     )
 }
