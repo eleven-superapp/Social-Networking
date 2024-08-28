@@ -9,8 +9,7 @@ import CustomBottomNavBar from '../components/shared/CustomBottomNavbar';
 import OnBoarding from '../screens/onBoardingScreens/onBoarding';
 import OnBoardingProfile from '../screens/onBoardingScreens/onBoardingProfile';
 import LoginScreen from '../screens/AuthScreens/loginScreen';
-import ReplyScreen from '../screens/mainScreens/ReplyScreen';
-import CommentScreen from '../screens/mainScreens/CommentScreen';
+import SpecificChat from '../screens/messageFlows/SpecificChat';
 
 const Stack = createStackNavigator();
 
@@ -18,7 +17,7 @@ const AppNavigator = () => {
   return (
     <UserProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Main"
+        <Stack.Navigator initialRouteName="Specific Chat"
         screenOptions={{
           headerShown:false
         }}
@@ -45,13 +44,9 @@ const AppNavigator = () => {
             options={{ headerShown: false }}
           />
 
-          <Stack.Screen name='Reply' component={ReplyScreen} options={{
-                headerShown:false
-            }} />
-
-          <Stack.Screen name='Comment' component={CommentScreen} options={{
-                headerShown:false
-          }}/>
+          <Stack.Screen component={SpecificChat} name='Specific Chat'  options={{
+            headerTitle:'Chats'
+          }} />
         
         </Stack.Navigator>
       </NavigationContainer>

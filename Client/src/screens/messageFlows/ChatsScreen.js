@@ -117,7 +117,7 @@ const ChatsScreen = () => {
           renderItem={({ item }) => (
             <TouchableOpacity
               onLongPress={() => handleLongPress(item.id)}
-              onPress={() => toggleSelectChat(item.id)}
+              // onPress={() => toggleSelectChat(item.id)}
             >
               <View style={[
                 styles.chatItem,
