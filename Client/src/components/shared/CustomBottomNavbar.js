@@ -6,7 +6,8 @@ import MessageNavigation from '../../navigations/MessageNavigator';
 import MainScreensNavigator from '../../navigations/MainScreensNavigator';
 import AwardScreen from '../../screens/award/Award';
 import Leaderboard from '../../screens/leaderboard/Leaderboard';
-import UpdateScreen from '../../screens/updates/Updates';
+// import UpdateScreen from '../../screens/updates/NotificationScreen';
+import NotificationScreen from '../../screens/updates/NotificationScreen';
 const Tab = createBottomTabNavigator();
 
 const CustomBottomNavBar = () => {
@@ -28,7 +29,7 @@ const CustomBottomNavBar = () => {
         })}
       >
         <Tab.Screen name="Leaderboard" component={Leaderboard} />
-        <Tab.Screen name="Updates" component={UpdateScreen} />
+        <Tab.Screen name="Updates" component={NotificationScreen} />
         <Tab.Screen name="Chats" component={MessageNavigation} />
         <Tab.Screen name="Awards" component={AwardScreen} />
         <Tab.Screen name="Home" component={MainScreensNavigator} />
