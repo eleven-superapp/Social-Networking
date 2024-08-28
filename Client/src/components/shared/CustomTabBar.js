@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
-import { Plus, Trophy, Bell, MessageCircle, User, Home } from 'lucide-react-native';
+import { Plus, Trophy, Bell, MessageCircle, User, Home,Award } from 'lucide-react-native';
 
 const CustomTabBar = (props) => {
   const navigation = useNavigation();
@@ -57,9 +57,9 @@ const CustomTabBar = (props) => {
       IconComponent = MessageCircle;
       label = 'Chats';
       additionalStyles = { top: '-20%', left: '30%' };
-    } else if (route.name === 'Profile') {
-      IconComponent = User;
-      label = 'Profile';
+    } else if (route.name === 'Awards') {
+      IconComponent = Award;
+      label = 'Awards';
       additionalStyles = { right: '3%',top: '-6%' };
     }
 
