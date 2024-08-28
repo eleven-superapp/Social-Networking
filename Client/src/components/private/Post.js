@@ -232,7 +232,7 @@ const Post = ({ post, currentUser  }) => {
           </TouchableOpacity>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Comment Screen", { post: post, selectedButton: selectedButton })}
+          onPress={() => navigation.navigate("Comment", { post: post, selectedButton: selectedButton })}
           style={{ flexDirection: 'row', alignItems: 'center' }}>
           <MessageCircle color={'#FFFFFF'} size={20} />
           <Text style={styles.postFooterText}>{post.comments.length}</Text>
