@@ -1,232 +1,179 @@
+import { Trophy } from 'lucide-react-native';
 import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-// import { StatusBar } from 'expo-status-bar';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import Header from '../../components/shared/Header';
-import { ArrowRight, Trophy } from 'lucide-react-native';
 
-const achievements = [
-    {
-        id: 1,
-        imgPath: require('../../../assets/images/GoldMedal.png'),
-        title: 'Congratulations!',
-        description: 'You have completed your weekly goal and consumed 20% less nicotine as usual.',
-    },
-    {
-        id: 2,
-        imgPath: require('../../../assets/images/GoldMedal.png'),
-        title: 'Congratulations!',
-        description: 'You have completed your weekly goal and consumed 20% less nicotine as usual.',
-    },
-];
-
-const girlImgUrl = "https://s3-alpha-sig.figma.com/img/4b64/2b31/3e9a4be7c5317ed69c25259c18e36700?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=nafjvoKvID9B6EOzS7CFw9~8-uTKGplXEx0GLgHqZT9QBY2dqtRlQUh7MXqLNRAeM7IoMxsL7HrUFCn1UEBead49hRlIKsHM8Kwlok1g1sfT2k7MVeexBnR534AYbklbzES7pOzT0TlTy3O3TohE6pnEDmCGVut~jsUBl6B3-3nWQdyHNMkdty7VCRxNyRE59NoUUXlYngX0LWeEVqQ2aQPEvNsRq8la7Ne35B4luJsqPQMO0eiz4pGHSj-SheUhR43997j-1HNOS-c-NDVdP-owWyimBZ4~KOot5~23XQIdYt-3KarsjytWPwdZgz1uNwvF9yMDTch1FZiVGAU46w__";
-
-const othersStories = [
-    {
-        id: 1,
-        image: girlImgUrl,
-        title: 'Congratulations!',
-        description: 'You have completed your weekly goal and consumed 20% less nicotine as usual.',
-        backgroundColor: '#002244',
-        imgViewBackgroundColor: '#3066BE1A'
-    },
-    {
-        id: 2,
-        image: girlImgUrl,
-        title: 'Congratulations!',
-        description: 'You have completed your weekly goal and consumed 20% less nicotine as usual.',
-        backgroundColor: '#23F65E1A',
-        imgViewBackgroundColor: '#23F65E1A'
-    },
-    {
-        id: 3,
-        image: girlImgUrl,
-        title: 'Congratulations!',
-        description: 'You have completed your weekly goal and consumed 20% less nicotine as usual.',
-        backgroundColor: '#442200',
-        imgViewBackgroundColor:'#C88B4463'
-    },
-];
-
-const profileUrl = "https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=B8sjb3U3UfZ0WttI0J81E6~1UUl4GKmGX736UT59F8ZmJ3Bfj1RF7nZmOW0UYHsg6atqxVX8JymFtyAS0-ByzCf9w~P9cioFrm0KLoZaMEhzzimFoE266xXPfnCaZsCwwiFPO9CHfktmLxC3tqHvtcbCnmExAxitxNTMKwXL5o-~kD53bSGqbJnkkEZ1FBBUI5~UfraOvrs4vF9SDL7uhKTK0ZeU6hCGkIwoQx6jtZCEspbTg6qVAzEF1Jv49DNW6OdVoLWAUFNWsXpjYzeGZaw~yGtmKaEV~YuddVMbrxq3fam7fBkz8qNEpfgL0lAYTAtQpzWgES2R0jmMmc2dnQ__";
+const profilePicUrl = "https://s3-alpha-sig.figma.com/img/2048/b3ec/daeb0d2251044e35d7d5e713aa8c23cd?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=EV-uzfleFyEzdLIHSAytBL2wLEpDBPR~efzqaAcEurd258Csr3euC1M6u8r50GMU1E6OhSKgFjsiKsiO31nj19z-mKBqb9mse0tIdtUF-Z0oYEtuZ8mpIIUBuz~AcYF95GtLLY6n5flBAKR-JXw2usb7liOkXHweaNUdLDrNhwlnuE1pNNSw1axD7DorgsSpwlO7LdYK9F-TVRGJ~fV0fbOcEl3qrXzzEYmVOUpBmIreBShuXl31gqQJhhvuIlGbkVL~LDfoCosvDkxTIo~7g8EMZsb61uWCsjJyFZfIJeLvcobVf0DWbLBzfgWIKDyvStCmMsMGbg3NLNGlpFtYhA__";
 
 const Leaderboard = () => {
-    return (
-        <ScrollView style={styles.container}>
-            <Header heading="Leaderboard" />
 
-            {/* Profile Section */}
+    function getBackground(item){
+        let style = [styles.leaderboardItem];
+
+        if(item.rank=="1st"){
+            style = [styles.leaderboardItem,{backgroundColor:'#8F1229'}];
+        }
+        else if(item.rank=="2nd"){
+            style = [styles.leaderboardItem,{backgroundColor:'#C0C0C0'}];
+        }
+        else if(item.rank=="3rd"){
+            style = [styles.leaderboardItem,{backgroundColor:'#CDA865'}];
+        }
+        else{
+            style = [styles.leaderboardItem,{backgroundColor:'#B26E6E'}];
+        }
+        return style
+    }
+    
+    return (
+        <View style={styles.container}>
+              <Header heading="Leaderboard" />
+            {/* User Profile Section */}
             <View style={styles.profileSection}>
                 <Image
-                    source={{ uri: profileUrl }}
+                    source={{ uri: profilePicUrl }} // Replace with actual image URL
                     style={styles.profileImage}
                 />
-                <View style={styles.profileDetails}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={styles.profileName}>Siber Koza</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: '5%' }}>
-                            <Trophy color={'#FFFFFF'} size={14} fill={'white'} />
-                            <Text style={styles.profileRank}>Rank: 5th</Text>
-                        </View>
+                <Text style={styles.username}>makyismynickname</Text>
+                <View style={styles.infoContainer}>
+                    <View style={styles.infoBox}>
+                        <Trophy color={'#FFFFFF'} size={22} fill={'#FFFFFF'} />
+                        <Text style={styles.infoText}>Rank: 5th</Text>
                     </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={styles.infoBox}>
                         <Image source={require('../../../assets/images/FiveStarBadge.png')} style={{ height: 20, width: 20 }} resizeMode='contain' />
-                        <Text style={styles.profileBadge}>Badges: 1231 pts</Text>
+                        <Text style={styles.infoText}>Badges: 1231 pts</Text>
                     </View>
                 </View>
+                <View style={[styles.infoBox, { borderRadius: 12 }]} >
+                    <Trophy color={'#FFFFFF'} size={22} fill={'#FFFFFF'} />
+                    <Text style={styles.pointsBehind}>400 points behind 1st place</Text>
+                </View>
+
             </View>
 
-            {/* Achievements Section */}
-            <Text style={styles.sectionTitle}>Your Achievements</Text>
-            {achievements.map((achievement) => (
-                <View key={achievement.id} style={styles.achievementContainer}>
-                    <View style={styles.achievementCard}>
-                        <Image source={achievement.imgPath} style={styles.achievementIcon} />
-                        <View style={styles.achievementTextContainer}>
-                            <Text style={styles.achievementTitle}>{achievement.title}</Text>
-                            <Text style={styles.achievementDescription}>{achievement.description}</Text>
-                            <View style={styles.shareButtonContainer}>
-                                <Text style={styles.shareButton}>Share with community</Text>
-                                <TouchableOpacity style={styles.shareButtonIcon}>
-                                    <ArrowRight color={'black'} size={22} />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-            ))}
+            {/* Leaderboard List */}
+            <ScrollView style={styles.leaderboardList}>
+                <View style={{ flexDirection: 'row',paddingHorizontal:10,marginBottom:15 }} >
 
-            {/* Other's Story Section */}
-            <Text style={styles.sectionTitle}>Other's Story</Text>
-            {othersStories.map((story) => (
-                <View key={story.id} style={[styles.storyCard, { backgroundColor: story.backgroundColor }]}>
-                    <View style={{backgroundColor:story.imgViewBackgroundColor,padding:10,borderColor:'#F51F4624',borderWidth:1}} >
-                        <Image source={{ uri: story.image }} style={styles.storyImage} />
+                    <View style={{flex:1}} >
+                        <Text style={{ color: '#868686', fontWeight: '700', fontSize: 18,textAlign:'left' }} >Rank</Text>
                     </View>
 
-                    <View style={styles.storyText}>
-                        <Text style={styles.storyTitle}>{story.title}</Text>
-                        <Text style={styles.storyDescription}>{story.description}</Text>
+                    <View  style={{flex:1}} >
+                        <Text style={{ color: '#868686', fontWeight: '700', fontSize: 18,textAlign:'center' }}>Name</Text>
+
+                    </View>
+                    <View style={{flex:1}} >
+
+                        <Text style={{ color: '#868686', fontWeight: '700', fontSize: 18,textAlign:'right' }}>Points</Text>
                     </View>
                 </View>
-            ))}
-        </ScrollView>
+                {leaderboardData.map((item, index) => {
+                    const highlightStyle = getBackground(item);
+                    return(
+                    <View
+                        key={index}
+                        style={highlightStyle}
+                    >
+                        <Text style={styles.rank}>{item.rank}</Text>
+                        <Image source={{ uri: item.avatar }} style={styles.avatar} />
+                        <Text style={styles.name}>{item.name}</Text>
+                        <Text style={styles.points}>{item.points}</Text>
+                    </View>)
+                })}
+            </ScrollView>
+        </View>
     );
 };
+
+const leaderboardData = [
+    { rank: '1st', name: 'Stephen Joseph', points: '2,123', avatar: 'https://s3-alpha-sig.figma.com/img/ab82/89aa/3611f103b4e5b0c757815f37fc9741a4?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=iPZeiZlDI9cuOksLdcYMKtvkHJYJwSADjcEqsucxajGiKlVQAMjkqOuhUz4A9K6e2SQgCmU9amTd029bpo3NK3Edl0GyC4J2kI1Iqt4MSlHTq8WIg4uPxpFowrUw8OTIpd9JsV6HcSnJrjcns-UGLFFk6EUDrXVEDEvqg1piAGzUbFFZ1KC0-v-~D3~XFDcxqPculJRVaLCV3a1fg-j2ui7~rPMAPxKU3j3JZaUNlieM1lG108AnMYABl-6epKzmNLvKldQSJc-6k3T9xuhbRZM5XZirCOb~MC4YiHNETS1XVOm405zf1bBLG1NggIkmdqIzs5iB7idpvTr1YO~ljA__' },
+    { rank: '2nd', name: 'Angelina Warden', points: '2,120', avatar: 'https://s3-alpha-sig.figma.com/img/2048/b3ec/daeb0d2251044e35d7d5e713aa8c23cd?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=EV-uzfleFyEzdLIHSAytBL2wLEpDBPR~efzqaAcEurd258Csr3euC1M6u8r50GMU1E6OhSKgFjsiKsiO31nj19z-mKBqb9mse0tIdtUF-Z0oYEtuZ8mpIIUBuz~AcYF95GtLLY6n5flBAKR-JXw2usb7liOkXHweaNUdLDrNhwlnuE1pNNSw1axD7DorgsSpwlO7LdYK9F-TVRGJ~fV0fbOcEl3qrXzzEYmVOUpBmIreBShuXl31gqQJhhvuIlGbkVL~LDfoCosvDkxTIo~7g8EMZsb61uWCsjJyFZfIJeLvcobVf0DWbLBzfgWIKDyvStCmMsMGbg3NLNGlpFtYhA__' },
+    { rank: '3rd', name: 'Conway Mathew', points: '1,982', avatar: 'https://s3-alpha-sig.figma.com/img/9849/6593/42149f70cf24b3decb7c986eceddd7e6?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=XXmhIOsFwOKDRgF01JqiR~HDT~3PuvOpJw3lZaBCZZGIfWec8Z72RPu4Gb9J8Ki0-U0pg-krq7GF731hQM0HoOkOSe6P-hue5NqJP19pURmGGsxrxq2NBcLKU6n0685B5tXQN~YQiwEk9wOVxfsXU-lahcnc15abskejf0K3Q4CuTTOpcwGNBQMn8tgYQas5yeAl9lqcT0mG8XaA2iqfq1~l-1WKjBhHuti7rEaNCY92-qk1XFqwl75nhnZS2mADatUJuY64Fh46huLBKQCd6I2I2rV-pzbXoeVDt2YhBh4Y5E4UAj2jhX5wHwbiTdW3iTeaeN7HuwFF-bMhS9Gzuw__' },
+    { rank: '4th', name: 'Samreen Ranel', points: '1,543', avatar: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=B8sjb3U3UfZ0WttI0J81E6~1UUl4GKmGX736UT59F8ZmJ3Bfj1RF7nZmOW0UYHsg6atqxVX8JymFtyAS0-ByzCf9w~P9cioFrm0KLoZaMEhzzimFoE266xXPfnCaZsCwwiFPO9CHfktmLxC3tqHvtcbCnmExAxitxNTMKwXL5o-~kD53bSGqbJnkkEZ1FBBUI5~UfraOvrs4vF9SDL7uhKTK0ZeU6hCGkIwoQx6jtZCEspbTg6qVAzEF1Jv49DNW6OdVoLWAUFNWsXpjYzeGZaw~yGtmKaEV~YuddVMbrxq3fam7fBkz8qNEpfgL0lAYTAtQpzWgES2R0jmMmc2dnQ__' },
+    { rank: '5th', name: 'makyismynickname', points: '1,231', avatar: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=B8sjb3U3UfZ0WttI0J81E6~1UUl4GKmGX736UT59F8ZmJ3Bfj1RF7nZmOW0UYHsg6atqxVX8JymFtyAS0-ByzCf9w~P9cioFrm0KLoZaMEhzzimFoE266xXPfnCaZsCwwiFPO9CHfktmLxC3tqHvtcbCnmExAxitxNTMKwXL5o-~kD53bSGqbJnkkEZ1FBBUI5~UfraOvrs4vF9SDL7uhKTK0ZeU6hCGkIwoQx6jtZCEspbTg6qVAzEF1Jv49DNW6OdVoLWAUFNWsXpjYzeGZaw~yGtmKaEV~YuddVMbrxq3fam7fBkz8qNEpfgL0lAYTAtQpzWgES2R0jmMmc2dnQ__' },    { rank: '6th', name: 'makyismynickname', points: '1,231', avatar: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=B8sjb3U3UfZ0WttI0J81E6~1UUl4GKmGX736UT59F8ZmJ3Bfj1RF7nZmOW0UYHsg6atqxVX8JymFtyAS0-ByzCf9w~P9cioFrm0KLoZaMEhzzimFoE266xXPfnCaZsCwwiFPO9CHfktmLxC3tqHvtcbCnmExAxitxNTMKwXL5o-~kD53bSGqbJnkkEZ1FBBUI5~UfraOvrs4vF9SDL7uhKTK0ZeU6hCGkIwoQx6jtZCEspbTg6qVAzEF1Jv49DNW6OdVoLWAUFNWsXpjYzeGZaw~yGtmKaEV~YuddVMbrxq3fam7fBkz8qNEpfgL0lAYTAtQpzWgES2R0jmMmc2dnQ__' },    { rank: '7th', name: 'makyismynickname', points: '1,231', avatar: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=B8sjb3U3UfZ0WttI0J81E6~1UUl4GKmGX736UT59F8ZmJ3Bfj1RF7nZmOW0UYHsg6atqxVX8JymFtyAS0-ByzCf9w~P9cioFrm0KLoZaMEhzzimFoE266xXPfnCaZsCwwiFPO9CHfktmLxC3tqHvtcbCnmExAxitxNTMKwXL5o-~kD53bSGqbJnkkEZ1FBBUI5~UfraOvrs4vF9SDL7uhKTK0ZeU6hCGkIwoQx6jtZCEspbTg6qVAzEF1Jv49DNW6OdVoLWAUFNWsXpjYzeGZaw~yGtmKaEV~YuddVMbrxq3fam7fBkz8qNEpfgL0lAYTAtQpzWgES2R0jmMmc2dnQ__' },{ rank: '8th', name: 'makyismynickname', points: '1,231', avatar: 'https://s3-alpha-sig.figma.com/img/6bca/b7d8/48c29ae3985c5658cf7a79702acf04ae?Expires=1725840000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=B8sjb3U3UfZ0WttI0J81E6~1UUl4GKmGX736UT59F8ZmJ3Bfj1RF7nZmOW0UYHsg6atqxVX8JymFtyAS0-ByzCf9w~P9cioFrm0KLoZaMEhzzimFoE266xXPfnCaZsCwwiFPO9CHfktmLxC3tqHvtcbCnmExAxitxNTMKwXL5o-~kD53bSGqbJnkkEZ1FBBUI5~UfraOvrs4vF9SDL7uhKTK0ZeU6hCGkIwoQx6jtZCEspbTg6qVAzEF1Jv49DNW6OdVoLWAUFNWsXpjYzeGZaw~yGtmKaEV~YuddVMbrxq3fam7fBkz8qNEpfgL0lAYTAtQpzWgES2R0jmMmc2dnQ__' },
+    // Additional items...
+];
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000',
-        paddingHorizontal: 16,
+        backgroundColor: 'black', // Dark theme primary color
     },
     profileSection: {
-        flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 16,
+        marginTop: 20,
     },
     profileImage: {
         width: 80,
         height: 80,
         borderRadius: 40,
+        marginBottom: 10,
     },
-    profileDetails: {
-        marginLeft: 16,
-    },
-    profileName: {
+    username: {
         fontSize: 18,
         color: '#fff',
         fontWeight: 'bold',
     },
-    profileBadge: {
-        color: '#fff',
-        marginTop: 4,
+    infoContainer: {
+        flexDirection: 'row',
+        marginVertical: 10,
     },
-    profileRank: {
-        color: '#FFFFFF',
-        fontWeight: '400',
-        marginLeft: 4,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        color: '#fff',
-        fontWeight: 'bold',
-        marginVertical: 8,
-        borderBottomColor: '#494949',
-        borderBottomWidth: 1,
-        paddingBottom: 6,
-    },
-    achievementContainer: {
-        backgroundColor: '#F51F463D',
-        borderColor: '#F51F46',
-        borderWidth: 1,
-        borderRadius: 8,
-        padding: 16,
-        marginVertical: 8,
-    },
-    achievementCard: {
+    infoBox: {
+        backgroundColor: '#8686864A', // Card background color
+        paddingVertical: 10,
+        borderRadius: 20,
+        marginHorizontal: 5,
         flexDirection: 'row',
         alignItems: 'center',
+        paddingHorizontal: 25
     },
-    achievementIcon: {
-        width: 80,
-        height: 80,
+    infoText: {
+        color: '#E5E5E5', // Text primary color
+        marginLeft: 5
     },
-    achievementTextContainer: {
+    pointsBehind: {
+        color: '#FFFFFF', // Text secondary color
+        fontSize: 14,
+        marginLeft: 5
+    },
+    leaderboardList: {
         flex: 1,
-        marginLeft: 16,
+        padding:20
     },
-    achievementTitle: {
-        fontSize: 17,
-        color: '#FFFFFF',
-        fontWeight: 'bold',
-    },
-    achievementDescription: {
-        color: '#FFFFFF',
-        marginTop: 4,
-    },
-    shareButtonContainer: {
+    leaderboardItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 15,
-        justifyContent: 'flex-end'
+        padding: 15,
+        backgroundColor: '#383838', // Card border color
+        borderRadius: 10,
+        marginBottom: 10,
     },
-    shareButton: {
+    highlight: {
+        backgroundColor: '#FF4C4C', // Highlight color for the user's rank
+    },
+    rank: {
         color: '#fff',
-        fontWeight: 'bold',
-    },
-    shareButtonIcon: {
-        backgroundColor: '#FFFFFFCC',
-        paddingHorizontal: 8,
-        borderRadius: 12,
-        marginLeft: 10,
-    },
-    storyCard: {
-        flexDirection: 'row',
-        borderRadius: 8,
-        padding: 20,
-        marginTop:10,
-        alignItems: 'center',
-        borderColor:'#F51F4624',
-        borderWidth:1
-    },
-    storyImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-    },
-    storyText: {
-        flex: 1,
-        marginLeft: 16,
-    },
-    storyTitle: {
+        width: 40,
         fontSize: 16,
-        color: '#fff',
         fontWeight: 'bold',
     },
-    storyDescription: {
+    avatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        marginHorizontal: 10,
+    },
+    name: {
         color: '#fff',
-        marginTop: 4,
+        flex: 1,
+        fontSize: 16,
+    },
+    points: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 
