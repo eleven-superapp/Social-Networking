@@ -18,6 +18,7 @@
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
     "axios": "^1.7.4",
+    "cors": "^2.8.5",
     "lucide-react-native": "^0.429.0",
     "react": "18.3.1",
     "react-native": "0.75.2",
@@ -41,8 +42,9 @@
     "react-navigation": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.25.9",
     "@babel/runtime": "^7.20.0",
     "@react-native/babel-preset": "0.75.2",
     "@react-native/eslint-config": "0.75.2",

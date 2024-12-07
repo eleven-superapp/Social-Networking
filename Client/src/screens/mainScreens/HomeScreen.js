@@ -1,140 +1,136 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { Bell, Search } from 'lucide-react-native';
-import Post from '../../components/private/Post';
-import Header from '../../components/shared/Header';
-import { UserContext } from '../../../context/userContextAPI';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-import { IP } from '../../../constants/constants';
+import {IP} from '../../../constants/constants';
 
-export default function HomeScreen() {
-    const { user, setUser } = useContext(UserContext);
-    const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+const HomeScreen = () => {
+  const [forums, setForums] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigation = useNavigation();
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            setLoading(true);
-            try {
-                // Retrieve the JWT token from AsyncStorage
-                const token = await AsyncStorage.getItem('jwt');
-                if (!token) {
-                    throw new Error('No token found');
-                }
-
-                // Fetch posts using the token
-                const response = await axios.get(`http://${IP}:5000/api/social/v1/posts`, {  // Ensure correct API endpoint
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                setPosts(response.data);
-            } catch (err) {
-                console.error('Failed to fetch posts:', err);
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPosts();
-        console.log("fetched posts:", posts);
-    }, []); // Empty dependency array means this effect runs once on mount
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#FFF" />
-            </View>
+  useEffect(() => {
+    const fetchForums = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `http://${IP}:3000/api/social/v1/forum`,
         );
-    }
+        setForums(response.data);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch forums');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (error) {
-        return (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-            </View>
-        );
-    }
+    fetchForums();
+  }, [navigation]);
 
+  const renderForum = ({item}) => (
+    <TouchableOpacity
+      style={styles.forumCard}
+      onPress={() =>
+        navigation.navigate('ForumDetails', {forumId: item._id, forum: item})
+      }>
+      <Text style={styles.forumTitle}>{item.title}</Text>
+      <Text style={styles.forumDescription}>{item.description}</Text>
+    </TouchableOpacity>
+  );
+
+  if (loading) {
     return (
-        <View style={styles.container}>
-            <Header />
-
-            <View style={styles.searchBox}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Search ‘your thought’"
-                    placeholderTextColor="#C5C5C5"
-                />
-                <Search size={18} color={'white'} />
-            </View>
-
-            {posts.length > 0 ? (
-                <FlatList
-                    data={posts}
-                    renderItem={({ item }) => <Post post={item} currentUser={user} />}
-                    keyExtractor={item => item._id} // Make sure _id is unique in your post schema
-                />
-            ) : (
-                <View style={styles.noPostsContainer}>
-                    <Text style={styles.noPostsText}>No Posts Available</Text>
-                    <Text style={styles.noPostsDescription}>Your posts will be added here</Text>
-                </View>
-            )}
-        </View>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FFFFFF" />
+      </View>
     );
-}
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      {forums.length > 0 ? (
+        <FlatList
+          data={forums}
+          renderItem={renderForum}
+          keyExtractor={item => item._id}
+        />
+      ) : (
+        <View style={styles.noForumsContainer}>
+          <Text style={styles.noForumsText}>No Forums Available</Text>
+          <Text style={styles.noForumsDescription}>
+            Create forums to get started
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#000',
-        padding: 10,
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#000',
-    },
-    errorContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#000',
-    },
-    errorText: {
-        color: 'red',
-        fontSize: 18,
-    },
-    searchBox: {
-        backgroundColor: '#333',
-        borderRadius: 10,
-        color: 'white',
-        marginVertical: 8,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-    },
-    input: {
-        flex: 1,
-    },
-    noPostsContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    noPostsText: {
-        fontSize: 18,
-        color: '#FFF',
-        marginBottom: 10,
-    },
-    noPostsDescription: {
-        fontSize: 14,
-        color: '#AAA',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#111',
+    padding: 10,
+  },
+  forumCard: {
+    backgroundColor: '#333',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+  },
+  forumTitle: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  forumDescription: {
+    color: '#AAA',
+    fontSize: 14,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    padding: 10,
+    backgroundColor: '#400',
+    borderRadius: 10,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+  },
+  noForumsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noForumsText: {
+    fontSize: 18,
+    color: '#FFF',
+    marginBottom: 10,
+  },
+  noForumsDescription: {
+    fontSize: 14,
+    color: '#AAA',
+  },
 });
+
+export default HomeScreen;
