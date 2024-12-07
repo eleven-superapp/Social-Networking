@@ -1,18 +1,24 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
-import { useNavigation } from '@react-navigation/native';
-import { Plus, Trophy, Bell, MessageCircle, User, Home } from 'lucide-react-native';
-
-const CustomTabBar = (props) => {
+import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
+import Svg, {Path} from 'react-native-svg';
+import {useNavigation} from '@react-navigation/native';
+import {
+  Plus,
+  Trophy,
+  Bell,
+  MessageCircle,
+  User,
+  Home,
+} from 'lucide-react-native';
+const CustomTabBar = props => {
   const navigation = useNavigation();
 
   const handleCenterPress = () => {
     const currentRoute = props.state.routeNames[props.state.index];
-    if (currentRoute !== 'Home') { 
+    if (currentRoute !== 'Home') {
       props.navigation.navigate('Home');
     } else {
-      navigation.navigate('ExpenseScreen');
+      navigation.navigate('AddForum');
     }
   };
 
@@ -48,19 +54,19 @@ const CustomTabBar = (props) => {
     if (route.name === 'Leaderboard') {
       IconComponent = Trophy;
       label = 'Leaderboard';
-      additionalStyles = { left: '3%',top: '-6%' };
+      additionalStyles = {left: '3%', top: '-6%'};
     } else if (route.name === 'Updates') {
       IconComponent = Bell;
       label = 'Updates';
-      additionalStyles = { top: '-20%', right: '25%' };
+      additionalStyles = {top: '-20%', right: '25%'};
     } else if (route.name === 'Chats') {
       IconComponent = MessageCircle;
       label = 'Chats';
-      additionalStyles = { top: '-20%', left: '30%' };
+      additionalStyles = {top: '-20%', left: '30%'};
     } else if (route.name === 'Profile') {
       IconComponent = User;
       label = 'Profile';
-      additionalStyles = { right: '3%',top: '-6%' };
+      additionalStyles = {right: '3%', top: '-6%'};
     }
 
     if (!IconComponent) {
@@ -73,10 +79,11 @@ const CustomTabBar = (props) => {
         key={index}
         onPress={onPress}
         onLongPress={onLongPress}
-        style={[styles.iconTouchable, additionalStyles]}
-      >
+        style={[styles.iconTouchable, additionalStyles]}>
         <IconComponent color={isFocused ? '#F51F46' : '#ffffff'} size={30} />
-        <Text style={{ color: isFocused ? '#F51F46' : '#ffffff', fontSize: 12 }}>{label}</Text>
+        <Text style={{color: isFocused ? '#F51F46' : '#ffffff', fontSize: 12}}>
+          {label}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -100,13 +107,21 @@ const CustomTabBar = (props) => {
         </View>
 
         {/* Center button */}
-        <TouchableOpacity onPress={handleCenterPress} style={styles.centerButton}>
-          { currentRoute === 'Home' ? <Plus color={'white'} size={45} /> : <Home color={'white'} size={45} /> }
+        <TouchableOpacity
+          onPress={handleCenterPress}
+          style={styles.centerButton}>
+          {currentRoute === 'Home' ? (
+            <Plus color={'white'} size={45} />
+          ) : (
+            <Home color={'white'} size={45} />
+          )}
         </TouchableOpacity>
 
         {/* Render right side icons */}
         <View style={styles.rightIcons}>
-          {rightRoutes.map((route, index) => renderIcon(route, index + leftRoutes.length))}
+          {rightRoutes.map((route, index) =>
+            renderIcon(route, index + leftRoutes.length),
+          )}
         </View>
       </View>
     </View>
@@ -129,7 +144,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 136,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
+    shadowOffset: {width: 0, height: 10},
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 10,
@@ -154,7 +169,7 @@ const styles = StyleSheet.create({
   iconTouchable: {
     alignItems: 'center',
     paddingVertical: 5,
-    gap: 2
+    gap: 2,
   },
   centerButton: {
     position: 'absolute',
@@ -170,12 +185,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 3.84,
-    borderColor: 'white',
+    // borderColor: 'white',
     borderWidth: 3,
-    marginBottom: '20%',
+    marginBottom: '10%',
   },
 });
 
